@@ -119,6 +119,9 @@ type idecor struct {
 %token	<str>	tokWhile
 %token	<str>	tokString
 
+%token  <str>   tokLCuBrk
+%token  <str>   tokRCuBrk
+
 %type	<abdecor>	abdecor abdec1
 %type	<decl>	fnarg fndef edecl
 %type	<decls>	decl decl_list_opt

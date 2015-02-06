@@ -58,8 +58,11 @@ const (
 	Indir             // *Left
 	Lsh               // Left << Right
 	LshEq             // Left <<= Right
+	LcuBrk            // Left <<< Right
 	Lt                // Left < Right
 	LtEq              // Left <= Right
+	RcuBrk            // Left >>> Right
+	CUCall			  // Left(List, List)
 	Minus             // -Left
 	Mod               // Left % Right
 	ModEq             // Left %= Right

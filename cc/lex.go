@@ -461,6 +461,10 @@ Restart:
 				lx.token(3)
 				return int(tokTokEq[c])
 			}
+			if tokTokEq[in[2]] != 0 && tokTokEq[c] != 0 {
+				lx.token(3)
+				return int(tokCuBrk[c])
+			}
 			lx.token(2)
 			return int(tokTok[c])
 		}
@@ -563,6 +567,11 @@ var tokTok = [256]int32{
 var tokTokEq = [256]int32{
 	'<': tokLshEq,
 	'>': tokRshEq,
+}
+
+var tokCuBrk = [256]int32{
+	'<': tokLCuBrk,
+	'>': tokRCuBrk,
 }
 
 var tokId = map[string]int32{
