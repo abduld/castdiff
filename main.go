@@ -23,7 +23,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/abduld/castdiff/cc"
+	cc "github.com/abduld/castdiff/cc"
 )
 
 var (
@@ -63,5 +63,5 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cc.Print(prog)
+	fmt.Println(prog)
 }
