@@ -826,13 +826,6 @@ yydefault:
 	_ = yypt // guard against "declared and not used"
 
 	yyp -= yyR2[yyn]
-	// yyp is now the index of $0. Perform the default action. Iff the
-	// reduced production is ε, $1 is possibly out of range.
-	if yyp+1 >= len(yyS) {
-		nyys := make([]yySymType, len(yyS)*2)
-		copy(nyys, yyS)
-		yyS = nyys
-	}
 	yyVAL = yyS[yyp+1]
 
 	/* consult goto table to find next state */

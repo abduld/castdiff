@@ -203,7 +203,7 @@ func (lx *lexer) findInclude(name string, std bool) (string, []byte, error) {
 			}
 			return "internal/" + name, []byte(redir), nil
 		}
-		name = "/Users/rsc/g/go/include/" + name
+		name = "/Users/abduld/" + name
 	}
 	if !filepath.IsAbs(name) {
 		name1 := filepath.Join(filepath.Dir(lx.file), name)
