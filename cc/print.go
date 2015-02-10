@@ -173,6 +173,7 @@ var opPrec = []int{
 	AndEq:      precEq,
 	Arrow:      precArrow,
 	Call:       precArrow,
+	CUDACall:   precArrow,
 	Cast:       precAddr,
 	CastInit:   precAddr,
 	Comma:      precComma,
@@ -240,7 +241,7 @@ var opStr = []string{
 	Indir:      "*",
 	Lsh:        "<<",
 	LshEq:      "<<=",
-	LcuBrk:		"<<<",
+	LcuBrk:		  "<<<",
 	Lt:         "<",
 	LtEq:       "<=",
 	Minus:      "-",
@@ -324,7 +325,24 @@ func (p *Printer) printExpr(x *Expr, prec int) {
 		p.Print(exprPrec{x.Left, prec}, "->", x.Text)
 
 	case Call:
-		p.Print(exprPrec{x.Left, precAddr}, "(")
+				p.Print(exprPrec{x.Left, precAddr}, "(")
+				for i, y := range x.List {
+					if i > 0 {
+						p.Print(", ")
+					}
+					p.printExpr(y, precComma)
+				}
+				p.Print(")")
+	case CUDACall:
+		p.Print(exprPrec{x.Left, precAddr}, "<<<")
+		for i, y := range x.LaunchParams {
+			if i > 0 {
+				p.Print(", ")
+			}
+			p.printExpr(y, precComma)
+		}
+		p.Print(">>>")
+		p.Print("(")
 		for i, y := range x.List {
 			if i > 0 {
 				p.Print(", ")

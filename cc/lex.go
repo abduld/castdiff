@@ -461,9 +461,20 @@ Restart:
 				lx.token(3)
 				return int(tokTokEq[c])
 			}
-			if tokTokEq[in[2]] != 0 && tokTokEq[c] != 0 {
+			if tokCuBrk[in[2]] != 0 && in[2] == c {
 				lx.token(3)
-				return int(tokCuBrk[c])
+				return int(tokCuBrk[in[2]])
+			}
+			if tokCuBrk[c] != 0 && isspace(in[2]) {
+				i := 2
+				for i < len(in) && isspace(in[i]) {
+					i++
+				}
+				if in[i] == c {
+					lx.token(i + 1)
+					//fmt.Println(string(in[i]), string(c), i, tokCuBrk[c])
+					return int(tokCuBrk[c])
+				}
 			}
 			lx.token(2)
 			return int(tokTok[c])

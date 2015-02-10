@@ -58,6 +58,7 @@ var exprTests = []string{
 	"(x, y, z)",
 	"x, y, z",
 	"f(x, y, z)",
+	"f<<<1, 2>>>(x, y, z)",
 	"x[y]",
 	"x++",
 	"x--",

@@ -13,6 +13,7 @@ type Expr struct {
 	Left  *Expr    // left (or only) operand
 	Right *Expr    // right operand
 	List  []*Expr  // operand list, for Comma, Cond, Call
+	LaunchParams  []*Expr  // launch params for CUDACall
 	Text  string   // name or literal, for Name, Number, Goto, Arrow, Dot
 	Texts []string // list of literals, for String
 	Type  *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
@@ -43,6 +44,7 @@ const (
 	AndEq             // Left &= Right
 	Arrow             // Left->Text
 	Call              // Left(List)
+	CUDACall			    // Left(LaunchParams, List)
 	Cast              // (Type)Left
 	CastInit          // (Type){Init}
 	Comma             // x, y, z; List = {x, y, z}
@@ -62,7 +64,6 @@ const (
 	Lt                // Left < Right
 	LtEq              // Left <= Right
 	RcuBrk            // Left >>> Right
-	CUCall			  // Left(List, List)
 	Minus             // -Left
 	Mod               // Left % Right
 	ModEq             // Left %= Right
@@ -93,6 +94,8 @@ const (
 	VaArg             // va_arg(Left, Type)
 	Xor               // Left ^ Right
 	XorEq             // Left ^= Right
+	LCuBrk
+	RCuBrk
 )
 
 var exprOpString = []string{
@@ -151,6 +154,8 @@ var exprOpString = []string{
 	VaArg:      "VaArg",
 	Xor:        "Xor",
 	XorEq:      "XorEq",
+	LCuBrk: "LCuBrk",
+	RCuBrk: "RCuBrk",
 }
 
 func (op ExprOp) String() string {
@@ -230,6 +235,9 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 	case *Expr:
 		walk(x.Left, before, after, seen)
 		walk(x.Right, before, after, seen)
+		for _, y := range x.LaunchParams {
+			walk(y, before, after, seen)
+		}
 		for _, y := range x.List {
 			walk(y, before, after, seen)
 		}

@@ -4,10 +4,10 @@
 
 // This grammar is derived from the C grammar in the 'ansitize'
 // program, which carried this notice:
-// 
-// Copyright (c) 2006 Russ Cox, 
+//
+// Copyright (c) 2006 Russ Cox,
 // 	Massachusetts Institute of Technology
-// 
+//
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated
 // documentation files (the "Software"), to deal in the
@@ -16,11 +16,11 @@
 // sublicense, and/or sell copies of the Software, and to
 // permit persons to whom the Software is furnished to do so,
 // subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall
 // be included in all copies or substantial portions of the
 // Software.
-// 
+//
 // The software is provided "as is", without warranty of any
 // kind, express or implied, including but not limited to the
 // warranties of merchantability, fitness for a particular
@@ -177,6 +177,7 @@ type idecor struct {
 %right	tokCast
 %left	'!' '~' tokSizeof tokUnary
 %right	'.' '[' ']' '(' ')' tokDec tokInc tokArrow
+%right tokLCuBrk tokRCuBrk
 %left	tokString
 
 %token	startExpr startProg tokEOF
@@ -219,7 +220,7 @@ cexpr:
 		}
 		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Comma, List: $1}
 	}
-		
+
 expr:
 	tokName
 	{
@@ -460,7 +461,12 @@ expr:
 	{
 		$<span>$ = span($<span>1, $<span>3)
 		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Paren, Left: $2}
-	}		
+	}
+|	expr tokLCuBrk expr_list_opt tokRCuBrk '(' expr_list_opt ')'
+	{
+		$<span>$ = span($<span>1, $<span>7)
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: CUDACall, Left: $1, LaunchParams: $3, List: $6}
+	}
 |	expr '(' expr_list_opt ')'
 	{
 		$<span>$ = span($<span>1, $<span>4)
@@ -542,7 +548,7 @@ lstmt:
 		$$ = $2
 		$$.Labels = $1
 	}
-		
+
 stmt:
 	';'
 	{
@@ -558,7 +564,7 @@ stmt:
 	{
 		$<span>$ = $<span>1
 		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Empty}
-	}			
+	}
 |	block
 	{
 		$<span>$ = $<span>1
@@ -568,7 +574,7 @@ stmt:
 	{
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: StmtExpr, Expr: $1}
-	}	
+	}
 |	tokARGBEGIN block1 tokARGEND
 	{
 		$<span>$ = span($<span>1, $<span>3)
@@ -592,7 +598,7 @@ stmt:
 |	tokFor '(' cexpr_opt ';' cexpr_opt ';' cexpr_opt ')' lstmt
 	{
 		$<span>$ = span($<span>1, $<span>9)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, 
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$},
 			Op: For,
 			Pre: $3,
 			Expr: $5,
@@ -686,9 +692,9 @@ abdec1:
 		$$ = func(t *Type) *Type {
 			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr})
 		}
-			
-	}	
-|	'(' abdecor ')'	
+
+	}
+|	'(' abdecor ')'
 	{
 		$<span>$ = span($<span>1, $<span>3)
 		$$ = $2
@@ -701,7 +707,7 @@ decor:
 		$<span>$ = $<span>1
 		name := $1
 		$$ = func(t *Type) (*Type, string) { return t, name }
-	}		
+	}
 |	'*' qname_list_opt decor
 	{
 		$<span>$ = span($<span>1, $<span>3)
@@ -735,8 +741,8 @@ decor:
 		expr := $3
 		$$ = func(t *Type) (*Type, string) {
 			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr})
-		}	
-	}	
+		}
+	}
 
 // Function argument
 fnarg:
@@ -749,7 +755,7 @@ fnarg:
 	{
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $2($1)}
-	}	
+	}
 |	type decor
 	{
 		$<span>$ = span($<span>1, $<span>2)
@@ -1031,7 +1037,7 @@ xdecl:
 	}
 
 fndef:
-	typeclass decor decl_list_opt 
+	typeclass decor decl_list_opt
 	{
 		lx := yylex.(*lexer)
 		typ, name := $2($1.t)
