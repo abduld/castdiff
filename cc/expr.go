@@ -19,7 +19,7 @@ type Expr struct {
 	Type  *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
 	Init  *Init    // initializer, for CastInit
 	Block []*Stmt  // for c2go
-
+	SourceExpr *Expr 
 	// derived information
 	XDecl *Decl
 	XType *Type // expression type, derived

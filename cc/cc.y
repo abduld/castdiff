@@ -122,6 +122,12 @@ type idecor struct {
 %token  <str>   tokLCuBrk
 %token  <str>   tokRCuBrk
 
+%token	<str>	tokDevice
+%token	<str>	tokHost
+%token	<str>	tokGlobal
+%token	<str>	tokShared
+%token	<str>	tokRestrict
+
 %type	<abdecor>	abdecor abdec1
 %type	<decl>	fnarg fndef edecl
 %type	<decls>	decl decl_list_opt
@@ -826,6 +832,31 @@ qname:
 		$<span>$ = $<span>1
 		$$ = $1
 	}
+| tokDevice
+  {
+		$<span>$ = $<span>1
+		$$ = $1
+  }
+| tokHost
+  {
+		$<span>$ = $<span>1
+		$$ = $1
+  }
+| tokGlobal
+  {
+		$<span>$ = $<span>1
+		$$ = $1
+  }
+| tokShared
+  {
+		$<span>$ = $<span>1
+		$$ = $1
+  }
+| tokRestrict
+  {
+		$<span>$ = $<span>1
+		$$ = $1
+  }
 
 // Type words
 tname:

@@ -622,6 +622,13 @@ var tokId = map[string]int32{
 	"volatile": tokVolatile,
 	"while":    tokWhile,
 
+	"__device__": tokDevice,
+	"__host__": tokHost,
+	"__global__": tokGlobal,
+	"__shared__": tokShared,
+	"restrict": tokRestrict,
+
+
 	"ARGBEGIN": tokARGBEGIN,
 	"ARGEND":   tokARGEND,
 	"AUTOLIB":  tokAUTOLIB,
