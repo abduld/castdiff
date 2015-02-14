@@ -70,6 +70,23 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 	return lx.prog, nil
 }
 
+func ParseProg(str string) (*Prog, error) {
+	lx := &lexer{
+		start: startExpr,
+		lexInput: lexInput{
+			input:  str + "\n",
+			file:   "<string>",
+			lineno: 1,
+		},
+	}
+	lx.parse()
+	if lx.errors != nil {
+		return nil, fmt.Errorf("parsing expression %#q: %v", str, lx.errors[0])
+	}
+	removeDuplicates(lx.prog)
+	return lx.prog, nil
+}
+
 func ParseExpr(str string) (*Expr, error) {
 	lx := &lexer{
 		start: startExpr,
