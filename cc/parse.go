@@ -72,7 +72,7 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 
 func ParseProg(str string) (*Prog, error) {
 	lx := &lexer{
-		start: startExpr,
+		start: startProg,
 		lexInput: lexInput{
 			input:  str + "\n",
 			file:   "<string>",

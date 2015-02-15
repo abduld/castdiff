@@ -623,11 +623,10 @@ var tokId = map[string]int32{
 	"while":    tokWhile,
 
 	"__device__": tokDevice,
-	"__host__": tokHost,
+	"__host__":   tokHost,
 	"__global__": tokGlobal,
 	"__shared__": tokShared,
-	"restrict": tokRestrict,
-
+	"restrict":   tokRestrict,
 
 	"ARGBEGIN": tokARGBEGIN,
 	"ARGEND":   tokARGEND,

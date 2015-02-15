@@ -33,6 +33,11 @@
 %{
 package cc
 
+import (
+"fmt"
+// "runtime/debug"
+)
+
 type typeClass struct {
 	c Storage
 	q TypeQual
@@ -186,9 +191,10 @@ type idecor struct {
 %right tokLCuBrk tokRCuBrk
 %left	tokString
 
-%token	startExpr startProg tokEOF
+%token startProg	startExpr tokEOF
 
 %%
+
 
 top:
 	startProg prog tokEOF
@@ -978,6 +984,7 @@ typeclass:
 		var ts []string
 		ts = append(ts, $1)
 		ts = append(ts, $2...)
+		//PrintStack()
 		$$.c, $$.q, $$.t = splitTypeWords(ts)
 	}
 
@@ -1010,6 +1017,7 @@ decl:
 		$<span>$ = span($<span>1, $<span>3)
 		// TODO: use $1.q
 		$$ = nil
+		fmt.Println($1.t)
 		for _, idec := range $2 {
 			typ, name := idec.d($1.t)
 			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i}
@@ -1055,6 +1063,7 @@ xdecl:
 	topdecl
 	{
 		$<span>$ = $<span>1
+		fmt.Println($1)
 		$$ = $1
 	}
 |	fndef

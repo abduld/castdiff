@@ -65,7 +65,15 @@ var exprTests = []string{
 	"va_arg(x, int)",
 }
 
-func TestPrintExpr(t *testing.T) {
+func TestPrintProg(t *testing.T) {
+	_, err := ParseProg("int x;")
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+}
+
+func XTestPrintExpr(t *testing.T) {
 	for _, str := range exprTests {
 		x, err := ParseExpr(str)
 		if err != nil {
