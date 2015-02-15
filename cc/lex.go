@@ -183,13 +183,12 @@ func (lx *lexer) pushInclude(includeLine string) {
 var stdMap = map[string]string{
 	"u.h":      hdr_u_h,
 	"libc.h":   hdr_libc_h,
+	"wb.h":     hdr_wb_h,
 	"stdarg.h": "",
 	"signal.h": "",
 }
 
-var extraMap = map[string]string{
-	"go.h": hdr_extra_go_h,
-}
+var extraMap = map[string]string{}
 
 var includes []string
 

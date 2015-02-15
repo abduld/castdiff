@@ -38,8 +38,8 @@ func keyroots(prog *Prog) []Syntax {
 	for i, v := range kr {
 		skr[i] = lmc[v]
 	}
-	for _, v := range skr {
-		fmt.Println(v)
+	for k, v := range skr {
+		fmt.Println(k, " = ", v)
 	}
 	return skr
 }

@@ -30,8 +30,7 @@ func populateHashMap(prog *Prog) map[int]Syntax {
 func ASTDistance(p1, p2 *Prog) int {
 	renumber(p1)
 	keyroots(p1)
-	hm := populateHashMap(p1)
-	fmt.Println(hm)
-	//findKeyRoots(p1)
+	//hm := populateHashMap(p1)
+	fmt.Println("done")
 	return 0
 }

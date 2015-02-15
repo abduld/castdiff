@@ -144,17 +144,7 @@ extern	int	noted(int);
 
 `
 
-var hdr_extra_go_h = `
-extern Node *N;
-extern Sym *S;
-extern Type *T;
-extern Label *L;
-//extern Case *C;
-extern Prog *P;
-
-enum
-{
-	BITS = 5,
-	NVAR = BITS*4*8,
-};
+var hdr_wb_h = `
+typedef int *wbArg_t;
+typedef int(*dim3)(int, int, int);
 `

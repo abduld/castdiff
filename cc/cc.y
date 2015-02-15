@@ -47,6 +47,7 @@ type typeClass struct {
 type idecor struct {
 	d func(*Type) (*Type, string)
 	i *Init
+	e *Expr
 }
 
 var id int = 0
@@ -792,12 +793,12 @@ idecor:
 	decor
 	{
 		$<span>$ = $<span>1
-		$$ = idecor{$1, nil}
+		$$ = idecor{$1, nil, nil}
 	}
 |	decor '=' init
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = idecor{$1, $3}
+		$$ = idecor{$1, $3, nil}
 	}
 
 // Class words
