@@ -9,20 +9,25 @@ import "fmt"
 // An Expr is a parsed C expression.
 type Expr struct {
 	SyntaxInfo
-	Op    ExprOp   // operator
-	Left  *Expr    // left (or only) operand
-	Right *Expr    // right operand
-	List  []*Expr  // operand list, for Comma, Cond, Call
-	LaunchParams  []*Expr  // launch params for CUDACall
-	Text  string   // name or literal, for Name, Number, Goto, Arrow, Dot
-	Texts []string // list of literals, for String
-	Type  *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
-	Init  *Init    // initializer, for CastInit
-	Block []*Stmt  // for c2go
-	SourceExpr *Expr 
+	Id           int
+	Op           ExprOp   // operator
+	Left         *Expr    // left (or only) operand
+	Right        *Expr    // right operand
+	List         []*Expr  // operand list, for Comma, Cond, Call
+	LaunchParams []*Expr  // launch params for CUDACall
+	Text         string   // name or literal, for Name, Number, Goto, Arrow, Dot
+	Texts        []string // list of literals, for String
+	Type         *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
+	Init         *Init    // initializer, for CastInit
+	Block        []*Stmt  // for c2go
+	SourceExpr   *Expr
 	// derived information
 	XDecl *Decl
 	XType *Type // expression type, derived
+}
+
+func (x *Expr) GetId() int {
+	return x.Id
 }
 
 func (x *Expr) String() string {
@@ -44,7 +49,7 @@ const (
 	AndEq             // Left &= Right
 	Arrow             // Left->Text
 	Call              // Left(List)
-	CUDACall			    // Left(LaunchParams, List)
+	CUDACall          // Left(LaunchParams, List)
 	Cast              // (Type)Left
 	CastInit          // (Type){Init}
 	Comma             // x, y, z; List = {x, y, z}
@@ -154,8 +159,8 @@ var exprOpString = []string{
 	VaArg:      "VaArg",
 	Xor:        "Xor",
 	XorEq:      "XorEq",
-	LCuBrk: "LCuBrk",
-	RCuBrk: "RCuBrk",
+	LCuBrk:     "LCuBrk",
+	RCuBrk:     "RCuBrk",
 }
 
 func (op ExprOp) String() string {
@@ -168,19 +173,29 @@ func (op ExprOp) String() string {
 // Prefix is an initializer prefix.
 type Prefix struct {
 	Span  Span
+	Id    int
 	Dot   string // .Dot =
 	XDecl *Decl  // for .Dot
 	Index *Expr  // [Index] =
 }
 
+func (x *Prefix) GetId() int {
+	return x.Id
+}
+
 // Init is an initializer expression.
 type Init struct {
 	SyntaxInfo
+	Id     int
 	Prefix []*Prefix // list of prefixes
 	Expr   *Expr     // Expr
 	Braced []*Init   // {Braced}
 
 	XType *Type // derived type
+}
+
+func (x *Init) GetId() int {
+	return x.Id
 }
 
 // Walk traverses the syntax x, calling before and after on entry to and exit from

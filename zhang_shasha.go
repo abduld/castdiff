@@ -6,20 +6,32 @@ import (
 	_ "runtime/debug"
 )
 
-func findKeyRoots(prog *Prog) map[int]Expr {
+func populateHashMap(prog *Prog) map[int]Syntax {
+	hm := map[int]Syntax{}
 	Preorder(prog, func(x Syntax) {
 		switch x := x.(type) {
 		case *Decl:
-			if x != nil {
-				out := x.String()
-				fmt.Println("got decl ", out)
-			}
+			hm[x.Id] = x
+		case *Init:
+			hm[x.Id] = x
+		case *Type:
+			hm[x.Id] = x
+		case *Expr:
+			hm[x.Id] = x
+		case *Stmt:
+			hm[x.Id] = x
+		case *Label:
+			hm[x.Id] = x
 		}
 	})
-	return nil
+	return hm
 }
 
 func ASTDistance(p1, p2 *Prog) int {
-	findKeyRoots(p1)
+	renumber(p1)
+	keyroots(p1)
+	hm := populateHashMap(p1)
+	fmt.Println(hm)
+	//findKeyRoots(p1)
 	return 0
 }

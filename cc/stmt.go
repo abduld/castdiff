@@ -6,6 +6,7 @@ package cc
 
 type Stmt struct {
 	SyntaxInfo
+	Id     int
 	Op     StmtOp
 	Pre    *Expr
 	Expr   *Expr
@@ -17,6 +18,10 @@ type Stmt struct {
 	Labels []*Label
 	Text   string
 	Type   *Type
+}
+
+func (x *Stmt) GetId() int {
+	return x.Id
 }
 
 type StmtOp int
@@ -41,9 +46,14 @@ const (
 
 type Label struct {
 	SyntaxInfo
+	Id   int
 	Op   LabelOp
 	Expr *Expr
 	Name string
+}
+
+func (x *Label) GetId() int {
+	return x.Id
 }
 
 type LabelOp int

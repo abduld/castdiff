@@ -6,6 +6,7 @@ package cc
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -13,6 +14,7 @@ var printf = fmt.Printf
 
 type Type struct {
 	SyntaxInfo
+	Id       int
 	Kind     TypeKind
 	Qual     TypeQual
 	Base     *Type
@@ -21,6 +23,10 @@ type Type struct {
 	Width    *Expr
 	Name     string
 	TypeDecl *Decl
+}
+
+func (x *Type) GetId() int {
+	return x.Id
 }
 
 type TypeKind int
@@ -278,7 +284,7 @@ func (t *Type) String() string {
 	}
 	switch t.Kind {
 	default:
-		return t.Kind.String()
+		return t.Kind.String() + "<" + strconv.Itoa(t.Id) + ">"
 	case TypedefType:
 		if t.Name == "" {
 			return "missing_typedef_name"
@@ -312,6 +318,7 @@ func (t *Type) String() string {
 
 type Decl struct {
 	SyntaxInfo
+	Id      int
 	Name    string
 	Type    *Type
 	Storage Storage
@@ -324,9 +331,13 @@ type Decl struct {
 	GoPackage string
 }
 
+func (x *Decl) GetId() int {
+	return x.Id
+}
+
 func (d *Decl) String() string {
 	if d == nil {
 		return "nil Decl"
 	}
-	return fmt.Sprintf("Decl{%s, %s}", d.Name, d.Type)
+	return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name, d.Type)
 }

@@ -34,7 +34,7 @@
 package cc
 
 import (
-"fmt"
+//"fmt"
 // "runtime/debug"
 )
 
@@ -47,6 +47,13 @@ type typeClass struct {
 type idecor struct {
 	d func(*Type) (*Type, string)
 	i *Init
+}
+
+var id int = 0
+
+func nextId() int {
+	id += 1
+	return id
 }
 
 %}
@@ -199,7 +206,7 @@ type idecor struct {
 top:
 	startProg prog tokEOF
 	{
-		yylex.(*lexer).prog = &Prog{Decls: $2}
+		yylex.(*lexer).prog = &Prog{Decls: $2, Id: nextId()}
 		return 0
 	}
 |	startExpr cexpr tokEOF
@@ -230,279 +237,279 @@ cexpr:
 			$$ = $1[0]
 			break
 		}
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Comma, List: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Comma, List: $1}
 	}
 
 expr:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Name, Text: $1, XDecl: $<decl>1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Name, Text: $1, XDecl: $<decl>1}
 	}
 |	tokNumber
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Number, Text: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Number, Text: $1}
 	}
 |	tokLitChar
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Number, Text: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Number, Text: $1}
 	}
 |	string_list
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: String, Texts: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: String, Texts: $1}
 	}
 |	expr '+' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Add, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Add, Left: $1, Right: $3}
 	}
 |	expr '-' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Sub, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Sub, Left: $1, Right: $3}
 	}
 |	expr '*' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Mul, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Mul, Left: $1, Right: $3}
 	}
 |	expr '/' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Div, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Div, Left: $1, Right: $3}
 	}
 |	expr '%' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Mod, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Mod, Left: $1, Right: $3}
 	}
 |	expr tokLsh expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Lsh, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Lsh, Left: $1, Right: $3}
 	}
 |	expr tokRsh expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Rsh, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Rsh, Left: $1, Right: $3}
 	}
 |	expr '<' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Lt, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Lt, Left: $1, Right: $3}
 	}
 |	expr '>' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Gt, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Gt, Left: $1, Right: $3}
 	}
 |	expr tokLtEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: LtEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: LtEq, Left: $1, Right: $3}
 	}
 |	expr tokGtEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: GtEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: GtEq, Left: $1, Right: $3}
 	}
 |	expr tokEqEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: EqEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: EqEq, Left: $1, Right: $3}
 	}
 |	expr tokNotEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: NotEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: NotEq, Left: $1, Right: $3}
 	}
 |	expr '&' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: And, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: And, Left: $1, Right: $3}
 	}
 |	expr '^' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Xor, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Xor, Left: $1, Right: $3}
 	}
 |	expr '|' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Or, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Or, Left: $1, Right: $3}
 	}
 |	expr tokAndAnd expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: AndAnd, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: AndAnd, Left: $1, Right: $3}
 	}
 |	expr tokOrOr expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: OrOr, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: OrOr, Left: $1, Right: $3}
 	}
 |	expr '?' cexpr ':' expr
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Cond, List: []*Expr{$1, $3, $5}}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Cond, List: []*Expr{$1, $3, $5}}
 	}
 |	expr '=' expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Eq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Eq, Left: $1, Right: $3}
 	}
 |	expr tokAddEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: AddEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: AddEq, Left: $1, Right: $3}
 	}
 |	expr tokSubEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: SubEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: SubEq, Left: $1, Right: $3}
 	}
 |	expr tokMulEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: MulEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: MulEq, Left: $1, Right: $3}
 	}
 |	expr tokDivEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: DivEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: DivEq, Left: $1, Right: $3}
 	}
 |	expr tokModEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: ModEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: ModEq, Left: $1, Right: $3}
 	}
 |	expr tokLshEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: LshEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: LshEq, Left: $1, Right: $3}
 	}
 |	expr tokRshEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: RshEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: RshEq, Left: $1, Right: $3}
 	}
 |	expr tokAndEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: AndEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: AndEq, Left: $1, Right: $3}
 	}
 |	expr tokXorEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: XorEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: XorEq, Left: $1, Right: $3}
 	}
 |	expr tokOrEq expr
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: OrEq, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: OrEq, Left: $1, Right: $3}
 	}
 |	'*' expr	%prec tokUnary
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Indir, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Indir, Left: $2}
 	}
 |	'&' expr	%prec tokUnary
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Addr, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Addr, Left: $2}
 	}
 |	'+' expr	%prec tokUnary
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Plus, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Plus, Left: $2}
 	}
 |	'-' expr	%prec tokUnary
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Minus, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Minus, Left: $2}
 	}
 |	'!' expr
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Not, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Not, Left: $2}
 	}
 |	'~' expr
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Twid, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Twid, Left: $2}
 	}
 |	tokInc expr
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: PreInc, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: PreInc, Left: $2}
 	}
 |	tokDec expr
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: PreDec, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: PreDec, Left: $2}
 	}
 |	tokSizeof expr	%prec tokSizeof
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: SizeofExpr, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: SizeofExpr, Left: $2}
 	}
 |	tokSizeof '(' abtype ')'	%prec tokSizeof
 	{
 		$<span>$ = span($<span>1, $<span>4)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: SizeofType, Type: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: SizeofType, Type: $3}
 	}
 |	tokOffsetof '(' abtype ',' expr ')'	%prec tokSizeof
 	{
 		$<span>$ = span($<span>1, $<span>6)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Offsetof, Type: $3, Left: $5}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Offsetof, Type: $3, Left: $5}
 	}
 |	'(' abtype ')' expr	%prec tokCast
 	{
 		$<span>$ = span($<span>1, $<span>4)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Cast, Type: $2, Left: $4}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Cast, Type: $2, Left: $4}
 	}
 |	'(' abtype ')' braced_init_list	%prec tokCast
 	{
 		$<span>$ = span($<span>1, $<span>4)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: CastInit, Type: $2, Init: &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Braced: $4}}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: CastInit, Type: $2, Init: &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Braced: $4, Id: nextId()}}
 	}
 |	'(' cexpr ')'
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Paren, Left: $2}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Paren, Left: $2}
 	}
 |	expr tokLCuBrk expr_list_opt tokRCuBrk '(' expr_list_opt ')'
 	{
 		$<span>$ = span($<span>1, $<span>7)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: CUDACall, Left: $1, LaunchParams: $3, List: $6}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: CUDACall, Left: $1, LaunchParams: $3, List: $6}
 	}
 |	expr '(' expr_list_opt ')'
 	{
 		$<span>$ = span($<span>1, $<span>4)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Call, Left: $1, List: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Call, Left: $1, List: $3}
 	}
 |	expr '[' cexpr ']'
 	{
 		$<span>$ = span($<span>1, $<span>4)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Index, Left: $1, Right: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Index, Left: $1, Right: $3}
 	}
 |	expr tokInc
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: PostInc, Left: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: PostInc, Left: $1}
 	}
 |	expr tokDec
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: PostDec, Left: $1}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: PostDec, Left: $1}
 	}
 |	tokVaArg '(' expr ',' abtype ')'
 	{
 		$<span>$ = span($<span>1, $<span>6)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: VaArg, Left: $3, Type: $5}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: VaArg, Left: $3, Type: $5}
 	}
 
 block1:
@@ -515,7 +522,7 @@ block1:
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = $1
 		for _, d := range $2 {
-			$$ = append($$, &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: StmtDecl, Decl: d})
+			$$ = append($$, &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: StmtDecl, Decl: d})
 		}
 	}
 |	block1 lstmt
@@ -533,24 +540,24 @@ block:
 	{
 		$<span>$ = span($<span>1, $<span>4)
 		yylex.(*lexer).popScope()
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Block, Block: $3}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Block, Block: $3}
 	}
 
 label:
 	tokCase expr ':'
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Case, Expr: $2}
+		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Case, Expr: $2}
 	}
 |	tokDefault ':'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Default}
+		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Default}
 	}
 |	tokName ':'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: LabelName, Name: $1}
+		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: LabelName, Name: $1}
 	}
 
 lstmt:
@@ -565,17 +572,17 @@ stmt:
 	';'
 	{
 		$<span>$ = $<span>1
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Empty}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Empty}
 	}
 |	tokUSED '(' cexpr ')' ';'
 	{
 		$<span>$ = $<span>1
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Empty}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Empty}
 	}
 |	tokSET '(' cexpr ')' ';'
 	{
 		$<span>$ = $<span>1
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Empty}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Empty}
 	}
 |	block
 	{
@@ -585,33 +592,33 @@ stmt:
 |	cexpr ';'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: StmtExpr, Expr: $1}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: StmtExpr, Expr: $1}
 	}
 |	tokARGBEGIN block1 tokARGEND
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: ARGBEGIN, Block: $2}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: ARGBEGIN, Block: $2}
 	}
 |	tokBreak ';'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Break}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Break}
 	}
 |	tokContinue ';'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Continue}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Continue}
 	}
 |	tokDo lstmt tokWhile '(' cexpr ')' ';'
 	{
 		$<span>$ = span($<span>1, $<span>7)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Do, Body: $2, Expr: $5}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Do, Body: $2, Expr: $5}
 	}
 |	tokFor '(' cexpr_opt ';' cexpr_opt ';' cexpr_opt ')' lstmt
 	{
 		$<span>$ = span($<span>1, $<span>9)
 		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$},
-			Op: For,
+			Id: nextId(), Op: For,
 			Pre: $3,
 			Expr: $5,
 			Post: $7,
@@ -621,32 +628,32 @@ stmt:
 |	tokGoto tag ';'
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Goto, Text: $2}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Goto, Text: $2}
 	}
 |	tokIf '(' cexpr ')' lstmt	%prec tokShift
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: If, Expr: $3, Body: $5}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: If, Expr: $3, Body: $5}
 	}
 |	tokIf '(' cexpr ')' lstmt tokElse lstmt
 	{
 		$<span>$ = span($<span>1, $<span>7)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: If, Expr: $3, Body: $5, Else: $7}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: If, Expr: $3, Body: $5, Else: $7}
 	}
 |	tokReturn cexpr_opt ';'
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Return, Expr: $2}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Return, Expr: $2}
 	}
 |	tokSwitch '(' cexpr ')' lstmt
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Switch, Expr: $3, Body: $5}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Switch, Expr: $3, Body: $5}
 	}
 |	tokWhile '(' cexpr ')' lstmt
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: While, Expr: $3, Body: $5}
+		$$ = &Stmt{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: While, Expr: $3, Body: $5}
 	}
 
 // Abstract declarator - abdec1 includes the slot where the name would go
@@ -661,7 +668,7 @@ abdecor:
 		_, q, _ := splitTypeWords($2)
 		abdecor := $3
 		$$ = func(t *Type) *Type {
-			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Ptr, Base: t, Qual: q})
+			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Ptr, Base: t, Qual: q, Id: nextId()})
 		}
 	}
 |	abdec1
@@ -687,12 +694,12 @@ abdec1:
 					if t.Width == nil {
 						t = t.Base
 					}
-					decl.Type = &Type{Kind: Ptr, Base: t}
+					decl.Type = &Type{Kind: Ptr, Base: t, Id: nextId()}
 				}
 			}
 		}
 		$$ = func(t *Type) *Type {
-			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Func, Base: t, Decls: decls})
+			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Func, Base: t, Decls: decls, Id: nextId()})
 		}
 	}
 |	abdecor '[' expr_opt ']'
@@ -702,7 +709,7 @@ abdec1:
 		span := $<span>$
 		expr := $3
 		$$ = func(t *Type) *Type {
-			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr})
+			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr, Id: nextId()})
 		}
 
 	}
@@ -727,7 +734,7 @@ decor:
 		decor := $3
 		span := $<span>$
 		$$ = func(t *Type) (*Type, string) {
-			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Ptr, Base: t, Qual: q})
+			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Ptr, Base: t, Qual: q, Id: nextId()})
 		}
 	}
 |	'(' decor ')'
@@ -742,7 +749,7 @@ decor:
 		decls := $3
 		span := $<span>$
 		$$ = func(t *Type) (*Type, string) {
-			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Func, Base: t, Decls: decls})
+			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Func, Base: t, Decls: decls, Id: nextId()})
 		}
 	}
 |	decor '[' expr_opt ']'
@@ -752,7 +759,7 @@ decor:
 		span := $<span>$
 		expr := $3
 		$$ = func(t *Type) (*Type, string) {
-			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr})
+			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr, Id: nextId()})
 		}
 	}
 
@@ -761,23 +768,23 @@ fnarg:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1}
+		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1, Id: nextId()}
 	}
 |	type abdecor
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $2($1)}
+		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $2($1), Id: nextId()}
 	}
 |	type decor
 	{
 		$<span>$ = span($<span>1, $<span>2)
 		typ, name := $2($1)
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ}
+		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Id: nextId()}
 	}
 |	tokDotDotDot
 	{
 		$<span>$ = $<span>1
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "..."}
+		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "...", Id: nextId()}
 	}
 
 // Initialized declarator
@@ -943,7 +950,7 @@ typespec:
 		$<span>$ = $<span>1
 		$$ = $<typ>1
 		if $$ == nil {
-			$$ = &Type{Kind: TypedefType, Name: $<str>1}
+			$$ = &Type{Kind: TypedefType, Name: $<str>1, Id: nextId()}
 		}
 	}
 
@@ -1017,15 +1024,14 @@ decl:
 		$<span>$ = span($<span>1, $<span>3)
 		// TODO: use $1.q
 		$$ = nil
-		fmt.Println($1.t)
 		for _, idec := range $2 {
 			typ, name := idec.d($1.t)
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i}
+			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i, Id: nextId()}
 			lx.pushDecl(d);
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c}
+			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c, Id: nextId()}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1042,7 +1048,7 @@ topdecl:
 			typ, name := idec.d($1.t)
 			d := lx.lookupDecl(name)
 			if d == nil {
-				d = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i}
+				d = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i, Id: nextId()}
 				lx.pushDecl(d)
 			} else {
 				d.Span = $<span>$
@@ -1053,7 +1059,7 @@ topdecl:
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c}
+			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c, Id: nextId()}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1063,7 +1069,6 @@ xdecl:
 	topdecl
 	{
 		$<span>$ = $<span>1
-		fmt.Println($1)
 		$$ = $1
 	}
 |	fndef
@@ -1087,7 +1092,7 @@ fndef:
 		}
 		d := lx.lookupDecl(name)
 		if d == nil {
-			d = &Decl{Name: name, Type: typ, Storage: $1.c}
+			d = &Decl{Name: name, Type: typ, Storage: $1.c, Id: nextId()}
 			lx.pushDecl(d);
 		} else {
 			d.Type = typ
@@ -1159,10 +1164,10 @@ sudecl:
 		$$ = nil
 		for _, decor := range $2 {
 			typ, name := decor($1)
-			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ})
+			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Id: nextId()})
 		}
 		if $2 == nil {
-			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $1})
+			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $1, Id: nextId()})
 		}
 	}
 
@@ -1170,12 +1175,12 @@ typespec:
 	structunion tag
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2, Id: nextId()})
 	}
 |	structunion tag_opt '{' sudecl_list '}'
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2, Decls: $4})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2, Decls: $4, Id: nextId()})
 	}
 
 initprefix:
@@ -1189,12 +1194,12 @@ expr:
 	expr tokArrow tag
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Arrow, Left: $1, Text: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Arrow, Left: $1, Text: $3}
 	}
 |	expr '.' tag
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Op: Dot, Left: $1, Text: $3}
+		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Dot, Left: $1, Text: $3}
 	}
 
 // enum
@@ -1202,12 +1207,12 @@ typespec:
 	tokEnum tag
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2, Id: nextId()})
 	}
 |	tokEnum tag_opt '{' edecl_list comma_opt '}'
 	{
 		$<span>$ = span($<span>1, $<span>6)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2, Decls: $4})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2, Decls: $4, Id: nextId()})
 	}
 
 edecl:
@@ -1216,9 +1221,9 @@ edecl:
 		$<span>$ = span($<span>1, $<span>2)
 		var x *Init
 		if $2 != nil {
-			x = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $2}
+			x = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $2, Id: nextId()}
 		}
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1, Init: x}
+		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1, Init: x, Id: nextId()}
 		yylex.(*lexer).pushDecl($$);
 	}
 
@@ -1234,12 +1239,12 @@ init:
 	expr
 	{
 		$<span>$ = $<span>1
-		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $1}
+		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $1, Id: nextId()}
 	}
 |	braced_init_list
 	{
 		$<span>$ = $<span>1
-		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Braced: $1}
+		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Braced: $1, Id: nextId()}
 	}
 
 braced_init_list:

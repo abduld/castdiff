@@ -29,6 +29,8 @@ type Syntax interface {
 	// The use of a Get prefix is non-standard but avoids a conflict
 	// with the field named Comments in most implementations.
 	GetComments() *Comments
+
+	GetId() int
 }
 
 // SyntaxInfo contains metadata about a piece of syntax.

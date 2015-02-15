@@ -105,7 +105,12 @@ func ParseExpr(str string) (*Expr, error) {
 
 type Prog struct {
 	SyntaxInfo
+	Id    int
 	Decls []*Decl
+}
+
+func (x *Prog) GetId() int {
+	return x.Id
 }
 
 // removeDuplicates drops the duplicated declarations
