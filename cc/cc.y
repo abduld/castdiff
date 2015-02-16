@@ -195,10 +195,11 @@ func nextId() int {
 %left	'*' '/' '%'
 %right	tokCast
 %left	'!' '~' tokSizeof tokUnary
-%right	'.' '[' ']' '(' ')' tokDec tokInc tokArrow
+%right	'.' '[' ']' ')' tokDec tokInc tokArrow
 %right tokLCuBrk tokRCuBrk
 %left	tokString
 
+%nonassoc '('
 %token startProg	startExpr tokEOF
 
 %%
@@ -1592,3 +1593,5 @@ string_list:
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = append($1, $2)
 	}
+
+

@@ -95,3 +95,16 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 	*/
 	return lmc
 }
+
+func leftMostChild0(prog *Prog) map[int]Syntax {
+	lmc := map[int]Syntax{}
+	Postorder(prog, func(x Syntax) {
+		children := x.GetChildren()
+		if len(children) == 0 {
+			lmc[x.GetId()] = x
+		} else {
+			lmc[x.GetId()] = lmc[children[0].GetId()]
+		}
+	})
+	return lmc
+}

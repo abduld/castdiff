@@ -18,10 +18,10 @@ type Type struct {
 	Kind     TypeKind
 	Qual     TypeQual
 	Base     *Type
-	Tag      string
+	Tag      Keyword
 	Decls    []*Decl
 	Width    *Expr
-	Name     string
+	Name     SymbolLiteral
 	TypeDecl *Decl
 }
 
@@ -30,7 +30,14 @@ func (x *Type) GetId() int {
 }
 
 func (x *Type) GetChildren() []Syntax {
-	return []Syntax{}
+	lst := []Syntax{}
+	if x.Base != nil {
+		lst = append(lst, x.Base)
+	}
+	for _, elem := range x.Decls {
+		lst = append(lst, elem)
+	}
+	return lst
 }
 
 func (x *Type) GetComments() *Comments {
@@ -331,7 +338,7 @@ func (t *Type) String() string {
 type Decl struct {
 	SyntaxInfo
 	Id      int
-	Name    string
+	Name    SymbolLiteral
 	Type    *Type
 	Storage Storage
 	Init    *Init
@@ -340,7 +347,6 @@ type Decl struct {
 	XOuter    *Decl
 	CurFn     *Decl
 	OuterType *Type
-	GoPackage string
 }
 
 func (x *Decl) GetId() int {
@@ -365,5 +371,9 @@ func (d *Decl) String() string {
 	if d == nil {
 		return "nil Decl"
 	}
-	return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name, d.Type)
+	if d.Init != nil {
+		return fmt.Sprintf("Decl<%d>{%s, %s} = %s", d.Id, d.Name, d.Type, d.Init)
+	} else {
+		return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name, d.Type)
+	}
 }

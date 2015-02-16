@@ -6,22 +6,12 @@ import (
 	"sort"
 )
 
-func numLeaves(lmc map[int]Syntax) int {
-	var n int = 0
-	for k, v := range lmc {
-		if k == v.GetId() {
-			n++
-		}
-	}
-	return n
-}
-
 /* A key root is a node of T that either has a left
  * sibling or is the root of T
  */
 func keyroots(prog *Prog) []Syntax {
 	lmc := leftMostChild(prog)
-	k := numLeaves(lmc)
+	k := leafCount(prog)
 	visitedQ := map[int]bool{}
 	kr := make([]int, k)
 	ii := len(lmc)
@@ -38,8 +28,13 @@ func keyroots(prog *Prog) []Syntax {
 	for i, v := range kr {
 		skr[i] = lmc[v]
 	}
+	fmt.Println("leaf count = ", leafCount(prog))
+	for k, v := range lmc {
+		fmt.Println(k, " >= ", v)
+	}
 	for k, v := range skr {
 		fmt.Println(k, " = ", v)
 	}
+	fmt.Println(prog.Decls[0])
 	return skr
 }

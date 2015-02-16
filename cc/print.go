@@ -241,7 +241,7 @@ var opStr = []string{
 	Indir:      "*",
 	Lsh:        "<<",
 	LshEq:      "<<=",
-	LcuBrk:		  "<<<",
+	LcuBrk:     "<<<",
 	Lt:         "<",
 	LtEq:       "<=",
 	Minus:      "-",
@@ -259,7 +259,7 @@ var opStr = []string{
 	PreInc:     "++",
 	Rsh:        ">>",
 	RshEq:      ">>=",
-	RcuBrk:		">>>",
+	RcuBrk:     ">>>",
 	Sub:        "-",
 	SubEq:      "-=",
 	Twid:       "~",
@@ -325,14 +325,14 @@ func (p *Printer) printExpr(x *Expr, prec int) {
 		p.Print(exprPrec{x.Left, prec}, "->", x.Text)
 
 	case Call:
-				p.Print(exprPrec{x.Left, precAddr}, "(")
-				for i, y := range x.List {
-					if i > 0 {
-						p.Print(", ")
-					}
-					p.printExpr(y, precComma)
-				}
-				p.Print(")")
+		p.Print(exprPrec{x.Left, precAddr}, "(")
+		for i, y := range x.List {
+			if i > 0 {
+				p.Print(", ")
+			}
+			p.printExpr(y, precComma)
+		}
+		p.Print(")")
 	case CUDACall:
 		p.Print(exprPrec{x.Left, precAddr}, "<<<")
 		for i, y := range x.LaunchParams {

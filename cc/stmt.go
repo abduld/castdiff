@@ -16,7 +16,7 @@ type Stmt struct {
 	Else   *Stmt
 	Block  []*Stmt
 	Labels []*Label
-	Text   string
+	Text   StringLiteral
 	Type   *Type
 }
 
@@ -112,7 +112,7 @@ type Label struct {
 	Id   int
 	Op   LabelOp
 	Expr *Expr
-	Name string
+	Name SymbolLiteral
 }
 
 func (x *Label) GetId() int {

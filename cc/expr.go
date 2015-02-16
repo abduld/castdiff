@@ -4,22 +4,24 @@
 
 package cc
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // An Expr is a parsed C expression.
 type Expr struct {
 	SyntaxInfo
 	Id           int
-	Op           ExprOp   // operator
-	Left         *Expr    // left (or only) operand
-	Right        *Expr    // right operand
-	List         []*Expr  // operand list, for Comma, Cond, Call
-	LaunchParams []*Expr  // launch params for CUDACall
-	Text         string   // name or literal, for Name, Number, Goto, Arrow, Dot
-	Texts        []string // list of literals, for String
-	Type         *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
-	Init         *Init    // initializer, for CastInit
-	Block        []*Stmt  // for c2go
+	Op           ExprOp          // operator
+	Left         *Expr           // left (or only) operand
+	Right        *Expr           // right operand
+	List         []*Expr         // operand list, for Comma, Cond, Call
+	LaunchParams []*Expr         // launch params for CUDACall
+	Text         SymbolLiteral   // name or literal, for Name, Number, Goto, Arrow, Dot
+	Texts        []StringLiteral // list of literals, for String
+	Type         *Type           // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
+	Init         *Init           // initializer, for CastInit
+	Block        []*Stmt         // for c2go
 	SourceExpr   *Expr
 	// derived information
 	XDecl *Decl
@@ -237,9 +239,9 @@ func (op ExprOp) String() string {
 type Prefix struct {
 	Span  Span
 	Id    int
-	Dot   string // .Dot =
-	XDecl *Decl  // for .Dot
-	Index *Expr  // [Index] =
+	Dot   SymbolLiteral // .Dot =
+	XDecl *Decl         // for .Dot
+	Index *Expr         // [Index] =
 }
 
 func (x *Prefix) GetId() int {
@@ -256,6 +258,14 @@ func (x *Prefix) GetComments() *Comments {
 
 func (s *Prefix) GetSpan() Span {
 	return Span{}
+}
+
+func (x *Prefix) String() string {
+	if x.Dot != "" {
+		return "." + x.Dot.String()
+	} else {
+		return "[" + x.Index.String() + "]"
+	}
 }
 
 // Init is an initializer expression.
@@ -289,6 +299,41 @@ func (x *Init) GetChildren() []Syntax {
 		}
 	}
 	return lst
+}
+
+func (x *Init) String() string {
+	res := ""
+	if len(x.Prefix) > 0 {
+		for _, pre := range x.Prefix {
+			res += pre.String()
+		}
+		res += " = "
+	}
+	if x.Expr != nil {
+		res += x.Expr.String()
+	} else {
+		nl := len(x.Braced) > 0 && x.Braced[0].Span.Start.Line != x.Braced[len(x.Braced)-1].Span.End.Line
+		res += "{"
+		if nl {
+			res += "\t"
+		}
+		for i, y := range x.Braced {
+			if i > 0 {
+				res += ","
+			}
+			if nl {
+				res += "\n"
+			} else if i > 0 {
+				res += " "
+			}
+			res += y.String()
+		}
+		if nl {
+			res += "\n"
+		}
+		res += "}"
+	}
+	return res
 }
 
 // Walk traverses the syntax x, calling before and after on entry to and exit from

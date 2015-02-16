@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-var src string = `
+var src0 string = `
 // MP 1
 #include  <wb.h>
 
@@ -86,6 +86,10 @@ int main(int argc, char ** argv) {
 }
 `
 
+var src string = `
+int x = 1;
+`
+
 func TestDistanceDecl(t *testing.T) {
 	p1, err := cc.ParseProg(src)
 	if err != nil {
@@ -99,6 +103,7 @@ func TestDistanceDecl(t *testing.T) {
 			return
 		}
 	*/
+
 	if ASTDistance(p1, p1) != 0 {
 		t.Errorf("Distance between %#q, %#q was not expected", p1, p1)
 	}
