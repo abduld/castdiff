@@ -239,9 +239,9 @@ func (op ExprOp) String() string {
 type Prefix struct {
 	Span  Span
 	Id    int
-	Dot   SymbolLiteral // .Dot =
-	XDecl *Decl         // for .Dot
-	Index *Expr         // [Index] =
+	Dot   Syntax // .Dot =
+	XDecl *Decl  // for .Dot
+	Index *Expr  // [Index] =
 }
 
 func (x *Prefix) GetId() int {

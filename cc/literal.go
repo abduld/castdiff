@@ -4,6 +4,23 @@ import (
 	"strconv"
 )
 
+type EmptyLiteral struct {
+	SyntaxInfo
+	Id int
+}
+
+func (x *EmptyLiteral) GetId() int {
+	return x.Id
+}
+
+func (x *EmptyLiteral) String() string {
+	return ""
+}
+
+func (x *EmptyLiteral) GetChildren() []Syntax {
+	return []Syntax{}
+}
+
 type BooleanLiteral struct {
 	SyntaxInfo
 	Id    int
@@ -98,6 +115,14 @@ func (x *StringLiteral) GetChildren() []Syntax {
 	return []Syntax{}
 }
 
+func (x *StringLiteral) ToSymbolLiteral() *SymbolLiteral {
+	return &SymbolLiteral{
+		SyntaxInfo: x.SyntaxInfo,
+		Value:      x.Value,
+		Id:         x.Id,
+	}
+}
+
 type SymbolLiteral struct {
 	SyntaxInfo
 	Id    int
@@ -116,6 +141,10 @@ func (x *SymbolLiteral) GetChildren() []Syntax {
 	return []Syntax{}
 }
 
+func (x *SymbolLiteral) ToSymbolLiteral() *SymbolLiteral {
+	return x
+}
+
 type LanguageKeyword struct {
 	SyntaxInfo
 	Id    int
@@ -132,4 +161,12 @@ func (x *LanguageKeyword) String() string {
 
 func (x *LanguageKeyword) GetChildren() []Syntax {
 	return []Syntax{}
+}
+
+func (x *LanguageKeyword) ToSymbolLiteral() *SymbolLiteral {
+	return &SymbolLiteral{
+		SyntaxInfo: x.SyntaxInfo,
+		Value:      x.Value,
+		Id:         x.Id,
+	}
 }

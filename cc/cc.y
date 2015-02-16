@@ -45,7 +45,7 @@ type typeClass struct {
 }
 
 type idecor struct {
-	d func(*Type) (*Type, string)
+	d func(*Type) (*Type, Syntax)
 	i *Init
 	e *Expr
 }
@@ -63,8 +63,8 @@ func nextId() int {
 	abdecor func(*Type) *Type
 	decl *Decl
 	decls []*Decl
-	decor func(*Type) (*Type, string)
-	decors []func(*Type) (*Type, string)
+	decor func(*Type) (*Type, Syntax)
+	decors []func(*Type) (*Type, Syntax)
 	expr *Expr
 	exprs []*Expr
 	idec idecor
@@ -173,8 +173,8 @@ func nextId() int {
 %type	<stmt>	stmt block lstmt
 %type	<stmts>	block1
 %type <symlit> tag
-%type	<syntaxs>	cname qname tname cqname cqtname tag_opt
-%type	<syntaxs>	cqname_list cqname_list_opt
+%type	<syntax>	cname qname tname cqname cqtname tag_opt
+%type	<syntaxs>	cqname_list cqname_list_opt 
 %type	<syntaxs>	cqtname_list cqtname_list_opt
 %type	<syntaxs>	qname_list qname_list_opt
 %type	<syntaxs>	string_list
@@ -759,7 +759,7 @@ decor:
 	{
 		$<span>$ = $<span>1
 		name := $1
-		$$ = func(t *Type) (*Type, string) { return t, name }
+		$$ = func(t *Type) (*Type, Syntax) { return t, name }
 	}
 |	'*' qname_list_opt decor
 	{
@@ -767,7 +767,7 @@ decor:
 		_, q, _ := splitTypeWords($2)
 		decor := $3
 		span := $<span>$
-		$$ = func(t *Type) (*Type, string) {
+		$$ = func(t *Type) (*Type, Syntax) {
 			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Ptr, Base: t, Qual: q, Id: nextId()})
 		}
 	}
@@ -782,7 +782,7 @@ decor:
 		decor := $1
 		decls := $3
 		span := $<span>$
-		$$ = func(t *Type) (*Type, string) {
+		$$ = func(t *Type) (*Type, Syntax) {
 			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Func, Base: t, Decls: decls, Id: nextId()})
 		}
 	}
@@ -792,7 +792,7 @@ decor:
 		decor := $1
 		span := $<span>$
 		expr := $3
-		$$ = func(t *Type) (*Type, string) {
+		$$ = func(t *Type) (*Type, Syntax) {
 			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Kind: Array, Base: t, Width: expr, Id: nextId()})
 		}
 	}
@@ -818,7 +818,15 @@ fnarg:
 |	tokDotDotDot
 	{
 		$<span>$ = $<span>1
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "...", Id: nextId()}
+		$$ = &Decl{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Name: &LanguageKeyword{
+				Value: "...",
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Id: nextId(),
+			},
+			Id: nextId(),
+		}
 	}
 
 // Initialized declarator
@@ -984,7 +992,15 @@ typespec:
 		$<span>$ = $<span>1
 		$$ = $<typ>1
 		if $$ == nil {
-			$$ = &Type{Kind: TypedefType, Name: $<str>1, Id: nextId()}
+			$$ = &Type{
+				Kind: TypedefType,
+				Name: &SymbolLiteral{
+					Value:$<str>1,
+					Id: nextId(),
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				},
+				Id: nextId(),
+			}
 		}
 	}
 
@@ -998,7 +1014,12 @@ typeclass:
 	cqname_list %prec tokShift
 	{
 		$<span>$ = $<span>1
-		$$.c, $$.q, $$.t = splitTypeWords(append($1, "int"))
+		$$.c, $$.q, $$.t = splitTypeWords(
+			append($1, &SymbolLiteral{
+				Value: "int",
+				Id: nextId(),
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},	
+			}))
 	}
 |	cqname_list typespec cqname_list_opt
 	{
@@ -1022,7 +1043,7 @@ typeclass:
 |	tname cqtname_list_opt
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		var ts []string
+		var ts []Syntax
 		ts = append(ts, $1)
 		ts = append(ts, $2...)
 		//PrintStack()
@@ -1065,7 +1086,7 @@ decl:
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c, Id: nextId()}
+			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: &SymbolLiteral{}, Type: $1.t, Storage: $1.c, Id: nextId()}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1093,7 +1114,7 @@ topdecl:
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: "", Type: $1.t, Storage: $1.c, Id: nextId()}
+			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: &SymbolLiteral{}, Type: $1.t, Storage: $1.c, Id: nextId()}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1185,7 +1206,7 @@ sudecor:
 		$<span>$ = span($<span>1, $<span>3)
 		name := $1
 		expr := $3
-		$$ = func(t *Type) (*Type, string) {
+		$$ = func(t *Type) (*Type, Syntax) {
 			t.Width = expr
 			return t, name
 		}
@@ -1365,7 +1386,7 @@ initprefix_list:
 tag_opt:
 	{
 		$<span>$ = Span{}
-		$$ = ""
+		$$ = &EmptyLiteral{}
 	}
 |	tag
 	{
@@ -1490,7 +1511,7 @@ qname_list:
 	qname
 	{
 		$<span>$ = $<span>1
-		$$ = []string{$1}
+		$$ = []Syntax{$1}
 	}
 |	qname_list qname
 	{
@@ -1513,7 +1534,7 @@ cqname_list:
 	cqname
 	{
 		$<span>$ = $<span>1
-		$$ = []string{$1}
+		$$ = []Syntax{$1}
 	}
 |	cqname_list cqname
 	{
@@ -1536,7 +1557,7 @@ cqtname_list:
 	cqtname
 	{
 		$<span>$ = $<span>1
-		$$ = []string{$1}
+		$$ = []Syntax{$1}
 	}
 |	cqtname_list cqtname
 	{
@@ -1618,7 +1639,7 @@ string_list:
 	tokString
 	{
 		$<span>$ = $<span>1
-		$$ = []string{$1}
+		$$ = []Syntax{$1}
 	}
 |	string_list tokString
 	{

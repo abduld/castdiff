@@ -21,7 +21,7 @@ type Type struct {
 	Tag      Syntax
 	Decls    []*Decl
 	Width    *Expr
-	Name     SymbolLiteral
+	Name     Syntax
 	TypeDecl *Decl
 }
 
@@ -176,7 +176,7 @@ var (
 	FloatType     = newType(Float)
 	DoubleType    = newType(Double)
 	VoidType      = newType(Void)
-	BoolType      = &Type{Kind: TypedefType, Name: SymbolLiteral{Value: "bool"}, Base: IntType}
+	BoolType      = &Type{Kind: TypedefType, Name: &SymbolLiteral{Value: "bool"}, Base: IntType}
 )
 
 type typeOp int
@@ -224,13 +224,13 @@ var builtinTypes = map[typeOp]*Type{
 	tVoid:   VoidType,
 }
 
-func splitTypeWords(ws []string) (c Storage, q TypeQual, ty *Type) {
+func splitTypeWords(ws []Syntax) (c Storage, q TypeQual, ty *Type) {
 	// Could check for doubled words in general,
 	// like const const, but no one cares.
 	var t typeOp
-	var ts []string
+	var ts []Syntax
 	for _, w := range ws {
-		switch w {
+		switch w.String() {
 		case "const":
 			q |= Const
 		case "volatile":
@@ -287,7 +287,11 @@ func splitTypeWords(ws []string) (c Storage, q TypeQual, ty *Type) {
 
 	ty = builtinTypes[t]
 	if ty == nil {
-		fmt.Printf("unsupported type %q\n", strings.Join(ts, " "))
+		ss := []string{}
+		for _, elem := range ts {
+			ss = append(ss, elem.String())
+		}
+		fmt.Printf("unsupported type %q\n", strings.Join(ss, " "))
 	}
 
 	return c, q, builtinTypes[t]
@@ -338,7 +342,7 @@ func (t *Type) String() string {
 type Decl struct {
 	SyntaxInfo
 	Id      int
-	Name    SymbolLiteral
+	Name    Syntax
 	Type    *Type
 	Storage Storage
 	Init    *Init

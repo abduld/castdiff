@@ -500,13 +500,13 @@ Restart:
 		if t := tokId[lx.tok]; t != 0 {
 			return int(t)
 		}
-		yy.decl = lx.lookupDecl(lx.tok)
+		yy.decl = lx.lookupDecl(&SymbolLiteral{Value: lx.tok})
 		if yy.decl != nil && yy.decl.Storage&Typedef != 0 {
 			t := yy.decl.Type
 			for t.Kind == TypedefType && t.Base != nil {
 				t = t.Base
 			}
-			yy.typ = &Type{Kind: TypedefType, Name: SymbolLiteral{Value: yy.str}, Base: t, TypeDecl: yy.decl}
+			yy.typ = &Type{Kind: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, TypeDecl: yy.decl}
 			return tokTypeName
 		}
 		if lx.tok == "EXTERN" {

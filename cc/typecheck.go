@@ -30,9 +30,9 @@ func (lx *lexer) pushDecl(decl *Decl) {
 	}
 }
 
-func (lx *lexer) lookupDecl(name string) *Decl {
+func (lx *lexer) lookupDecl(name Syntax) *Decl {
 	for sc := lx.scope; sc != nil; sc = sc.Next {
-		decl := sc.Decl[name]
+		decl := sc.Decl[name.String()]
 		if decl != nil {
 			return decl
 		}
