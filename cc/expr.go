@@ -12,16 +12,16 @@ import (
 type Expr struct {
 	SyntaxInfo
 	Id           int
-	Op           ExprOp          // operator
-	Left         *Expr           // left (or only) operand
-	Right        *Expr           // right operand
-	List         []*Expr         // operand list, for Comma, Cond, Call
-	LaunchParams []*Expr         // launch params for CUDACall
-	Text         SymbolLiteral   // name or literal, for Name, Number, Goto, Arrow, Dot
-	Texts        []StringLiteral // list of literals, for String
-	Type         *Type           // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
-	Init         *Init           // initializer, for CastInit
-	Block        []*Stmt         // for c2go
+	Op           ExprOp   // operator
+	Left         *Expr    // left (or only) operand
+	Right        *Expr    // right operand
+	List         []*Expr  // operand list, for Comma, Cond, Call
+	LaunchParams []*Expr  // launch params for CUDACall
+	Text         Syntax   // name or literal, for Name, Number, Goto, Arrow, Dot
+	Texts        []Syntax // list of literals, for String
+	Type         *Type    // type operand, for SizeofType, Offsetof, Cast, CastInit, VaArg
+	Init         *Init    // initializer, for CastInit
+	Block        []*Stmt  // for c2go
 	SourceExpr   *Expr
 	// derived information
 	XDecl *Decl

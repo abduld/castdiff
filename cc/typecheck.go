@@ -92,3 +92,12 @@ func (lx *lexer) lookupTag(name string) *Type {
 	}
 	return nil
 }
+
+func (lx *lexer) pushScope() {
+	sc := &Scope{Next: lx.scope}
+	lx.scope = sc
+}
+
+func (lx *lexer) popScope() {
+	lx.scope = lx.scope.Next
+}

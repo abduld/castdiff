@@ -4,17 +4,17 @@ import (
 	"strconv"
 )
 
-type BoolLiteral struct {
+type BooleanLiteral struct {
 	SyntaxInfo
 	Id    int
 	Value bool
 }
 
-func (x *BoolLiteral) GetId() int {
+func (x *BooleanLiteral) GetId() int {
 	return x.Id
 }
 
-func (x *BoolLiteral) String() string {
+func (x *BooleanLiteral) String() string {
 	if x.Value == true {
 		return "true"
 	} else {
@@ -22,7 +22,7 @@ func (x *BoolLiteral) String() string {
 	}
 }
 
-func (x *BoolLiteral) GetChildren() []Syntax {
+func (x *BooleanLiteral) GetChildren() []Syntax {
 	return []Syntax{}
 }
 
@@ -41,6 +41,24 @@ func (x *IntegerLiteral) String() string {
 }
 
 func (x *IntegerLiteral) GetChildren() []Syntax {
+	return []Syntax{}
+}
+
+type CharLiteral struct {
+	SyntaxInfo
+	Id    int
+	Value byte
+}
+
+func (x *CharLiteral) GetId() int {
+	return x.Id
+}
+
+func (x *CharLiteral) String() string {
+	return string([]byte{x.Value})
+}
+
+func (x *CharLiteral) GetChildren() []Syntax {
 	return []Syntax{}
 }
 
@@ -98,20 +116,20 @@ func (x *SymbolLiteral) GetChildren() []Syntax {
 	return []Syntax{}
 }
 
-type Keyword struct {
+type LanguageKeyword struct {
 	SyntaxInfo
 	Id    int
 	Value string
 }
 
-func (x *Keyword) GetId() int {
+func (x *LanguageKeyword) GetId() int {
 	return x.Id
 }
 
-func (x *Keyword) String() string {
+func (x *LanguageKeyword) String() string {
 	return x.Value
 }
 
-func (x *Keyword) GetChildren() []Syntax {
+func (x *LanguageKeyword) GetChildren() []Syntax {
 	return []Syntax{}
 }

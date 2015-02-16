@@ -33,6 +33,8 @@ type Syntax interface {
 	GetId() int
 
 	GetChildren() []Syntax
+
+	String() string
 }
 
 // SyntaxInfo contains metadata about a piece of syntax.
@@ -43,6 +45,10 @@ type SyntaxInfo struct {
 
 func (s *SyntaxInfo) GetSpan() Span {
 	return s.Span
+}
+
+func (s *SyntaxInfo) String() string {
+	return ""
 }
 
 func (s *SyntaxInfo) GetComments() *Comments {
@@ -402,12 +408,16 @@ Restart:
 		fallthrough
 
 	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+		resTok := tokInteger
 		for '0' <= in[i] && in[i] <= '9' || in[i] == '.' || 'A' <= in[i] && in[i] <= 'Z' || 'a' <= in[i] && in[i] <= 'z' {
+			if in[i] == '.' {
+				resTok = tokReal
+			}
 			i++
 		}
 		lx.sym(i)
 		yy.str = lx.tok
-		return tokNumber
+		return resTok
 
 	case '/':
 		switch in[1] {

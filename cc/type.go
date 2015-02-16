@@ -18,7 +18,7 @@ type Type struct {
 	Kind     TypeKind
 	Qual     TypeQual
 	Base     *Type
-	Tag      Keyword
+	Tag      Syntax
 	Decls    []*Decl
 	Width    *Expr
 	Name     SymbolLiteral

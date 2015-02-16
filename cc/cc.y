@@ -83,6 +83,15 @@ func nextId() int {
 	tc typeClass
 	tk TypeKind
 	typ *Type
+	symlit *SymbolLiteral
+	boollit *BooleanLiteral
+	reallit *RealLiteral
+	intlit *IntegerLiteral
+	charlit *CharLiteral
+	strlit *StringLiteral
+	syntax Syntax
+	syntaxs []Syntax
+	langkey *LanguageKeyword
 }
 
 %token	<str>	tokARGBEGIN
@@ -91,55 +100,56 @@ func nextId() int {
 %token	<str>	tokSET
 %token	<str>	tokUSED
 
-%token	<str>	tokAuto
-%token	<str>	tokBreak
-%token	<str>	tokCase
-%token	<str>	tokChar
-%token	<str>	tokConst
-%token	<str>	tokContinue
-%token	<str>	tokDefault
-%token	<str>	tokDo
-%token	<str>	tokDotDotDot
-%token	<str>	tokDouble
-%token	<str>	tokEnum
-%token	<str>	tokError
-%token	<str>	tokExtern
-%token	<str>	tokFloat
-%token	<str>	tokFor
-%token	<str>	tokGoto
-%token	<str>	tokIf
-%token	<str>	tokInline
-%token	<str>	tokInt
-%token	<str>	tokLitChar
-%token	<str>	tokLong
-%token	<str>	tokName
-%token	<str>	tokNumber
-%token	<str>	tokOffsetof
-%token	<str>	tokRegister
-%token	<str>	tokReturn
-%token	<str>	tokShort
-%token	<str>	tokSigned
-%token	<str>	tokStatic
-%token	<str>	tokStruct
-%token	<str>	tokSwitch
-%token	<str>	tokTypeName
-%token	<str>	tokTypedef
-%token	<str>	tokUnion
-%token	<str>	tokUnsigned
-%token	<str>	tokVaArg
-%token	<str>	tokVoid
-%token	<str>	tokVolatile
-%token	<str>	tokWhile
-%token	<str>	tokString
+%token	<langkey>	tokAuto
+%token	<langkey>	tokBreak
+%token	<langkey>	tokCase
+%token	<langkey>	tokChar
+%token	<langkey>	tokConst
+%token	<langkey>	tokContinue
+%token	<langkey>	tokDefault
+%token	<langkey>	tokDo
+%token	<langkey>	tokDotDotDot
+%token	<langkey>	tokDouble
+%token	<langkey>	tokEnum
+%token	<langkey>	tokError
+%token	<langkey>	tokExtern
+%token	<langkey>	tokFloat
+%token	<langkey>	tokFor
+%token	<langkey>	tokGoto
+%token	<langkey>	tokIf
+%token	<langkey>	tokInline
+%token	<langkey>	tokInt
+%token	<charlit>	tokLitChar
+%token	<langkey>	tokLong
+%token	<symlit>	tokName
+%token	<intlit>	tokInteger
+%token	<reallit>	tokReal
+%token	<langkey>	tokOffsetof
+%token	<langkey>	tokRegister
+%token	<langkey>	tokReturn
+%token	<langkey>	tokShort
+%token	<langkey>	tokSigned
+%token	<langkey>	tokStatic
+%token	<langkey>	tokStruct
+%token	<langkey>	tokSwitch
+%token	<langkey>	tokTypeName
+%token	<langkey>	tokTypedef
+%token	<langkey>	tokUnion
+%token	<langkey>	tokUnsigned
+%token	<langkey>	tokVaArg
+%token	<langkey>	tokVoid
+%token	<langkey>	tokVolatile
+%token	<langkey>	tokWhile
+%token	<strlit>	tokString
 
 %token  <str>   tokLCuBrk
 %token  <str>   tokRCuBrk
 
-%token	<str>	tokDevice
-%token	<str>	tokHost
-%token	<str>	tokGlobal
-%token	<str>	tokShared
-%token	<str>	tokRestrict
+%token	<symlit>	tokDevice
+%token	<symlit>	tokHost
+%token	<symlit>	tokGlobal
+%token	<symlit>	tokShared
+%token	<symlit>	tokRestrict
 
 %type	<abdecor>	abdecor abdec1
 %type	<decl>	fnarg fndef edecl
@@ -162,11 +172,12 @@ func nextId() int {
 %type	<prefixes>	initprefix_list
 %type	<stmt>	stmt block lstmt
 %type	<stmts>	block1
-%type	<str>	cname qname tname cqname cqtname tag tag_opt
-%type	<strs>	cqname_list cqname_list_opt
-%type	<strs>	cqtname_list cqtname_list_opt
-%type	<strs>	qname_list qname_list_opt
-%type	<strs>	string_list
+%type <symlit> tag
+%type	<syntaxs>	cname qname tname cqname cqtname tag_opt
+%type	<syntaxs>	cqname_list cqname_list_opt
+%type	<syntaxs>	cqtname_list cqtname_list_opt
+%type	<syntaxs>	qname_list qname_list_opt
+%type	<syntaxs>	string_list
 %type	<tc>	typeclass
 %type	<tk>	structunion
 %type	<typ>	abtype type typespec
@@ -246,12 +257,33 @@ expr:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Name, Text: $1, XDecl: $<decl>1}
+		$$ = &Expr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Op: Name,
+			Text: $1,
+			XDecl: $<decl>1,
+		}
 	}
-|	tokNumber
+|	tokInteger
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Number, Text: $1}
+		$$ = &Expr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Op: Number,
+			Text: $1,
+		}
+	}
+|	tokReal
+	{
+		$<span>$ = $<span>1
+		$$ = &Expr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Op: Number,
+			Text: $1,
+		}
 	}
 |	tokLitChar
 	{
@@ -1121,12 +1153,12 @@ tag:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = $1.ToSymbolLiteral()
 	}
 |	tokTypeName
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = $1.ToSymbolLiteral()
 	}
 
 // struct/union
