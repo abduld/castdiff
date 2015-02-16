@@ -30,6 +30,69 @@ func (x *Expr) GetId() int {
 	return x.Id
 }
 
+func (x *Expr) GetChildren() []Syntax {
+	lst := []Syntax{}
+	switch x.Op {
+	default:
+		if x.Type != nil {
+			lst = append(lst, x.Type)
+		}
+		if x.Left != nil {
+			lst = append(lst, x.Left)
+		}
+		if x.Right != nil {
+			lst = append(lst, x.Right)
+		}
+		if len(x.List) != 0 {
+			for _, elem := range x.List {
+				if elem != nil {
+					lst = append(lst, elem)
+				}
+			}
+		}
+	case Arrow:
+		lst = append(lst, x.Left)
+	case Call:
+		lst = append(lst, x.Left)
+		if len(x.List) != 0 {
+			for _, elem := range x.List {
+				if elem != nil {
+					lst = append(lst, elem)
+				}
+			}
+		}
+	case Comma:
+		if len(x.List) != 0 {
+			for _, elem := range x.List {
+				if elem != nil {
+					lst = append(lst, elem)
+				}
+			}
+		}
+	case Cond:
+		lst = append(lst, x.List[0], x.List[1], x.List[2])
+	case Dot:
+		lst = append(lst, x.Left)
+	case Cast:
+		lst = append(lst, x.Type)
+	case CastInit:
+		lst = append(lst, x.Type)
+	case Index:
+		lst = append(lst, x.Left, x.Right)
+	case Offsetof:
+		lst = append(lst, x.Type, x.Left)
+	case Paren:
+		lst = append(lst, x.Left)
+	case PostDec:
+		lst = append(lst, x.Left)
+	case PostInc:
+		lst = append(lst, x.Left)
+	case VaArg:
+		lst = append(lst, x.Left, x.Type)
+	}
+	return lst
+}
+
 func (x *Expr) String() string {
 	var p Printer
 	p.hideComments = true
@@ -183,6 +246,18 @@ func (x *Prefix) GetId() int {
 	return x.Id
 }
 
+func (x *Prefix) GetChildren() []Syntax {
+	return []Syntax{}
+}
+
+func (x *Prefix) GetComments() *Comments {
+	return nil
+}
+
+func (s *Prefix) GetSpan() Span {
+	return Span{}
+}
+
 // Init is an initializer expression.
 type Init struct {
 	SyntaxInfo
@@ -196,6 +271,24 @@ type Init struct {
 
 func (x *Init) GetId() int {
 	return x.Id
+}
+
+func (x *Init) GetChildren() []Syntax {
+	lst := []Syntax{}
+	if len(x.Prefix) != 0 {
+		for _, elem := range x.Prefix {
+			lst = append(lst, elem)
+		}
+	}
+	if x.Expr != nil {
+		lst = append(lst, x.Expr)
+	}
+	if len(x.Braced) != 0 {
+		for _, elem := range x.Braced {
+			lst = append(lst, elem)
+		}
+	}
+	return lst
 }
 
 // Walk traverses the syntax x, calling before and after on entry to and exit from

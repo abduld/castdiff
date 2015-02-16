@@ -31,6 +31,8 @@ type Syntax interface {
 	GetComments() *Comments
 
 	GetId() int
+
+	GetChildren() []Syntax
 }
 
 // SyntaxInfo contains metadata about a piece of syntax.

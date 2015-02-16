@@ -113,6 +113,14 @@ func (x *Prog) GetId() int {
 	return x.Id
 }
 
+func (x *Prog) GetChildren() []Syntax {
+	lst := []Syntax{}
+	for _, elem := range x.Decls {
+		lst = append(lst, elem)
+	}
+	return lst
+}
+
 // removeDuplicates drops the duplicated declarations
 // caused by forward decls from prog.
 // It keeps the _last_ of each given declaration,

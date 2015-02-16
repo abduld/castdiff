@@ -29,6 +29,18 @@ func (x *Type) GetId() int {
 	return x.Id
 }
 
+func (x *Type) GetChildren() []Syntax {
+	return []Syntax{}
+}
+
+func (x *Type) GetComments() *Comments {
+	return nil
+}
+
+func (s *Type) GetSpan() Span {
+	return Span{}
+}
+
 type TypeKind int
 
 const (
@@ -333,6 +345,20 @@ type Decl struct {
 
 func (x *Decl) GetId() int {
 	return x.Id
+}
+
+func (x *Decl) GetChildren() []Syntax {
+	lst := []Syntax{}
+	if x.Type != nil {
+		lst = append(lst, x.Type)
+	}
+	if x.Init != nil {
+		lst = append(lst, x.Init)
+	}
+	if x.Body != nil {
+		lst = append(lst, x.Body)
+	}
+	return lst
 }
 
 func (d *Decl) String() string {
