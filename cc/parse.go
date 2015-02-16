@@ -60,7 +60,6 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 	}
 	lx.prog = prog
 	lx.assignComments()
-	lx.typecheck(lx.prog)
 	if lx.errors != nil {
 		return nil, fmt.Errorf("%v", strings.Join(lx.errors, "\n"))
 	}

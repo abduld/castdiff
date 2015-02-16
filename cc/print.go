@@ -406,8 +406,8 @@ func (p *Printer) printExpr(x *Expr, prec int) {
 }
 
 func (p *Printer) printPrefix(x *Prefix) {
-	if x.Dot != "" {
-		p.Print(".", x.Dot)
+	if x.Dot.String() != "" {
+		p.Print(".", x.Dot.String())
 	} else {
 		p.Print("[", x.Index, "]")
 	}
@@ -469,8 +469,8 @@ func (p *Printer) printStmt(x *Stmt) {
 			p.Print(untab, unindent, lab.Comments.Before, indent, "\t")
 			p.Print(untab)
 			switch {
-			case lab.Name != "":
-				p.Print(lab.Name)
+			case lab.Name.String() != "":
+				p.Print(lab.Name.String())
 			case lab.Expr != nil:
 				p.Print("case ", lab.Expr)
 			default:
@@ -605,12 +605,12 @@ func (p *Printer) printDecl(x *Decl) {
 	if x.Type == nil {
 		p.Print(x.Name)
 	} else {
-		name := x.Name
+		name := x.Name.String()
 		if x.Type.Kind == Func && x.Body != nil {
 			name = "\n" + name
 		}
 		p.Print(TypedName{x.Type, name})
-		if x.Name == "" {
+		if x.Name.String() == "" {
 			switch x.Type.Kind {
 			case Struct, Union, Enum:
 				p.Print(" {", indent)

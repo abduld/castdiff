@@ -261,7 +261,7 @@ func (s *Prefix) GetSpan() Span {
 }
 
 func (x *Prefix) String() string {
-	if x.Dot != "" {
+	if x.Dot.String() != "" {
 		return "." + x.Dot.String()
 	} else {
 		return "[" + x.Index.String() + "]"

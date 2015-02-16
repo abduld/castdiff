@@ -496,7 +496,7 @@ Restart:
 			for t.Kind == TypedefType && t.Base != nil {
 				t = t.Base
 			}
-			yy.typ = &Type{Kind: TypedefType, Name: yy.str, Base: t, TypeDecl: yy.decl}
+			yy.typ = &Type{Kind: TypedefType, Name: SymbolLiteral{Value: yy.str}, Base: t, TypeDecl: yy.decl}
 			return tokTypeName
 		}
 		if lx.tok == "EXTERN" {

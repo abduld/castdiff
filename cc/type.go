@@ -176,7 +176,7 @@ var (
 	FloatType     = newType(Float)
 	DoubleType    = newType(Double)
 	VoidType      = newType(Void)
-	BoolType      = &Type{Kind: TypedefType, Name: "bool", Base: IntType}
+	BoolType      = &Type{Kind: TypedefType, Name: SymbolLiteral{Value: "bool"}, Base: IntType}
 )
 
 type typeOp int
@@ -305,17 +305,17 @@ func (t *Type) String() string {
 	default:
 		return t.Kind.String() + "<" + strconv.Itoa(t.Id) + ">"
 	case TypedefType:
-		if t.Name == "" {
+		if t.Name.String() == "" {
 			return "missing_typedef_name"
 		}
-		return t.Name
+		return t.Name.String()
 	case Ptr:
 		return t.Base.String() + "*"
 	case Struct, Union, Enum:
-		if t.Tag == "" {
+		if t.Tag.String() == "" {
 			return t.Kind.String()
 		}
-		return t.Kind.String() + " " + t.Tag
+		return t.Kind.String() + " " + t.Tag.String()
 	case Array:
 		return t.Base.String() + "[]"
 	case Func:
@@ -324,7 +324,7 @@ func (t *Type) String() string {
 			if i > 0 {
 				s += ", "
 			}
-			s += d.Name + " " + d.Type.String()
+			s += d.Name.String() + " " + d.Type.String()
 		}
 		if t.Base == t {
 			s += ") SELF"
