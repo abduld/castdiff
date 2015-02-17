@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"sort"
 
 	. "github.com/abduld/castdiff/cc"
@@ -11,7 +10,7 @@ import (
  * sibling or is the root of T
  */
 func keyroots(prog *Prog) []Syntax {
-	lmc := leftMostChild(prog)
+	lmc := leftMostChilden(prog)
 	k := leafCount(prog)
 	visitedQ := map[int]bool{}
 	kr := make([]int, k)
@@ -29,10 +28,5 @@ func keyroots(prog *Prog) []Syntax {
 	for i, v := range kr {
 		skr[i] = lmc[v]
 	}
-	fmt.Println("leaf count = ", leafCount(prog))
-	for k, v := range skr {
-		fmt.Println(k, " = ", v)
-	}
-	fmt.Println(prog.Decls[0])
 	return skr
 }

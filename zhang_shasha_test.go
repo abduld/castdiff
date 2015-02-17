@@ -86,12 +86,21 @@ int main(int argc, char ** argv) {
 }
 `
 
-var src string = `
+var src1 string = `
 int x = 1;
+`
+var src2 string = `
+float x = 2;
+float x = 2;
 `
 
 func TestDistanceDecl(t *testing.T) {
 	p1, err := cc.ParseProg(src0)
+	if err != nil {
+		t.Errorf("Unable to parse p1 -- %#q", err)
+		return
+	}
+	p2, err := cc.ParseProg(src1)
 	if err != nil {
 		t.Errorf("Unable to parse p1 -- %#q", err)
 		return
@@ -104,7 +113,7 @@ func TestDistanceDecl(t *testing.T) {
 		}
 	*/
 
-	if ASTDistance(p1, p1) != 0 {
+	if ASTDistance(p1, p2) != 0 {
 		t.Errorf("Distance between %#q, %#q was not expected", p1, p1)
 	}
 }

@@ -317,13 +317,20 @@ func (x *Init) String() string {
 // the traversal never visits a given Syntax more than once.
 func Walk(x Syntax, before, after func(Syntax)) {
 	seen := map[Syntax]bool{
-		nil:           true,
-		(*Decl)(nil):  true,
-		(*Init)(nil):  true,
-		(*Type)(nil):  true,
-		(*Expr)(nil):  true,
-		(*Stmt)(nil):  true,
-		(*Label)(nil): true,
+		nil:                     true,
+		(*EmptyLiteral)(nil):    true,
+		(*IntegerLiteral)(nil):  true,
+		(*CharLiteral)(nil):     true,
+		(*RealLiteral)(nil):     true,
+		(*StringLiteral)(nil):   true,
+		(*SymbolLiteral)(nil):   true,
+		(*LanguageKeyword)(nil): true,
+		(*Decl)(nil):            true,
+		(*Init)(nil):            true,
+		(*Type)(nil):            true,
+		(*Expr)(nil):            true,
+		(*Stmt)(nil):            true,
+		(*Label)(nil):           true,
 	}
 	walk(x, before, after, seen)
 }

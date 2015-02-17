@@ -6,26 +6,16 @@ import (
 	. "github.com/abduld/castdiff/cc"
 )
 
-func leftMostChild(prog *Prog) map[int]Syntax {
+func leftMostChilden(prog *Prog) map[int]Syntax {
 	lmc := map[int]Syntax{}
 	Postorder(prog, func(x Syntax) {
+
+		children := x.GetChildren()
+		if len(children) == 0 {
+			lmc[x.GetId()] = x
+			return
+		}
 		switch x := x.(type) {
-		case *EmptyLiteral:
-			lmc[x.Id] = x
-		case *BooleanLiteral:
-			lmc[x.Id] = x
-		case *IntegerLiteral:
-			lmc[x.Id] = x
-		case *CharLiteral:
-			lmc[x.Id] = x
-		case *RealLiteral:
-			lmc[x.Id] = x
-		case *StringLiteral:
-			lmc[x.Id] = x
-		case *SymbolLiteral:
-			lmc[x.Id] = x
-		case *LanguageKeyword:
-			lmc[x.Id] = x
 		case *Decl:
 			if x.Init != nil {
 				lmc[x.Id] = lmc[x.Init.Id]
@@ -36,7 +26,7 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 			} else if x.Name != nil && x.Name.String() == "" {
 				lmc[x.Id] = lmc[x.Type.Id]
 			} else {
-				lmc[x.Id] = x
+				lmc[x.Id] = lmc[children[0].GetId()]
 			}
 		case *Init:
 			lmc[x.Id] = lmc[x.Expr.Id]
@@ -47,11 +37,7 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 			case Comma:
 				lmc[x.Id] = lmc[x.List[0].Id]
 			default:
-				if x.Left != nil {
-					lmc[x.Id] = lmc[x.Left.Id]
-				} else {
-					lmc[x.Id] = x
-				}
+				lmc[x.Id] = lmc[children[0].GetId()]
 			}
 		case *Type:
 			switch x.Kind {
@@ -113,9 +99,12 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 	return lmc
 }
 
-func leftMostChild0(prog *Prog) map[int]Syntax {
+func leftMostChilden0(prog *Prog) map[int]Syntax {
 	lmc := map[int]Syntax{}
 	Postorder(prog, func(x Syntax) {
+		if x == nil {
+			return
+		}
 		children := x.GetChildren()
 		if len(children) == 0 {
 			lmc[x.GetId()] = x

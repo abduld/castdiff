@@ -7,8 +7,7 @@ import (
 func leafCount(prog *Prog) int {
 	var n int = 0
 	Postorder(prog, func(x Syntax) {
-		children := x.GetChildren()
-		if len(children) == 0 {
+		if len(x.GetChildren()) == 0 {
 			n++
 		}
 	})

@@ -113,7 +113,7 @@ func (x *StringLiteral) String() string {
 	if x == nil {
 		return `""`
 	} else {
-		return "\"" + x.Value + "\""
+		return x.Value
 	}
 }
 
