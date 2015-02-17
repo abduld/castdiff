@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "fmt"
+
 	. "github.com/abduld/castdiff/cc"
 )
 
@@ -9,6 +10,22 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 	lmc := map[int]Syntax{}
 	Postorder(prog, func(x Syntax) {
 		switch x := x.(type) {
+		case *EmptyLiteral:
+			lmc[x.Id] = x
+		case *BooleanLiteral:
+			lmc[x.Id] = x
+		case *IntegerLiteral:
+			lmc[x.Id] = x
+		case *CharLiteral:
+			lmc[x.Id] = x
+		case *RealLiteral:
+			lmc[x.Id] = x
+		case *StringLiteral:
+			lmc[x.Id] = x
+		case *SymbolLiteral:
+			lmc[x.Id] = x
+		case *LanguageKeyword:
+			lmc[x.Id] = x
 		case *Decl:
 			if x.Init != nil {
 				lmc[x.Id] = lmc[x.Init.Id]
@@ -16,7 +33,7 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 				lmc[x.Id] = x
 			} else if x.Body != nil {
 				lmc[x.Id] = lmc[x.Body.Id]
-			} else if x.Name == "" {
+			} else if x.Name.String() == "" {
 				lmc[x.Id] = lmc[x.Type.Id]
 			} else {
 				lmc[x.Id] = x

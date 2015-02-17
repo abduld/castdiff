@@ -31,6 +31,9 @@ func (x *Stmt) GetChildren() []Syntax {
 			lst = append(lst, elem)
 		}
 	}
+	if x.Text != nil {
+		lst = append(lst, x.Text)
+	}
 	switch x.Op {
 	case Block:
 		for _, elem := range x.Block {

@@ -1,9 +1,10 @@
 package main
 
 import (
-	_ "fmt"
-	cc "github.com/abduld/castdiff/cc"
+	"fmt"
 	"testing"
+
+	cc "github.com/abduld/castdiff/cc"
 )
 
 var src0 string = `
@@ -103,6 +104,8 @@ func TestDistanceDecl(t *testing.T) {
 			return
 		}
 	*/
+
+	fmt.Println("prog = ", p1.String())
 
 	if ASTDistance(p1, p1) != 0 {
 		t.Errorf("Distance between %#q, %#q was not expected", p1, p1)

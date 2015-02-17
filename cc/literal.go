@@ -1,8 +1,6 @@
 package cc
 
-import (
-	"strconv"
-)
+import "strconv"
 
 type EmptyLiteral struct {
 	SyntaxInfo
@@ -54,7 +52,11 @@ func (x *IntegerLiteral) GetId() int {
 }
 
 func (x *IntegerLiteral) String() string {
-	return strconv.Itoa(x.Value)
+	if x == nil {
+		return ""
+	} else {
+		return strconv.Itoa(x.Value)
+	}
 }
 
 func (x *IntegerLiteral) GetChildren() []Syntax {
@@ -72,7 +74,7 @@ func (x *CharLiteral) GetId() int {
 }
 
 func (x *CharLiteral) String() string {
-	return string([]byte{x.Value})
+	return "'" + string([]byte{x.Value}) + "'"
 }
 
 func (x *CharLiteral) GetChildren() []Syntax {
@@ -109,9 +111,9 @@ func (x *StringLiteral) GetId() int {
 
 func (x *StringLiteral) String() string {
 	if x == nil {
-		return ""
+		return `""`
 	} else {
-		return x.Value
+		return "\"" + x.Value + "\""
 	}
 }
 

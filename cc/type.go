@@ -34,6 +34,12 @@ func (x *Type) GetChildren() []Syntax {
 	if x.Base != nil {
 		lst = append(lst, x.Base)
 	}
+	if x.Tag != nil {
+		lst = append(lst, x.Tag)
+	}
+	if x.Name != nil {
+		lst = append(lst, x.Name)
+	}
 	for _, elem := range x.Decls {
 		lst = append(lst, elem)
 	}
@@ -362,6 +368,9 @@ func (x *Decl) GetChildren() []Syntax {
 	if x.Type != nil {
 		lst = append(lst, x.Type)
 	}
+	if x.Name != nil {
+		lst = append(lst, x.Name)
+	}
 	if x.Init != nil {
 		lst = append(lst, x.Init)
 	}
@@ -376,8 +385,8 @@ func (d *Decl) String() string {
 		return "nil Decl"
 	}
 	if d.Init != nil {
-		return fmt.Sprintf("Decl<%d>{%s, %s} = %s", d.Id, d.Name, d.Type, d.Init)
+		return fmt.Sprintf("Decl<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
 	} else {
-		return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name, d.Type)
+		return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
 	}
 }

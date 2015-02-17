@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -416,7 +417,13 @@ Restart:
 			i++
 		}
 		lx.sym(i)
-		yy.str = lx.tok
+		if resTok == tokInteger {
+			ival, _ := strconv.Atoi(lx.tok)
+			yy.intlit = &IntegerLiteral{Value: ival}
+		} else {
+			fval, _ := strconv.ParseFloat(lx.tok, 64)
+			yy.reallit = &RealLiteral{Value: fval}
+		}
 		return resTok
 
 	case '/':
@@ -653,12 +660,33 @@ func (lx *lexer) enum(x Syntax) {
 		panic(fmt.Errorf("order: unexpected type %T", x))
 	case nil:
 		return
+
+	case *EmptyLiteral:
+		//ok
+	case *BooleanLiteral:
+		//ok
+	case *IntegerLiteral:
+		//ok
+	case *CharLiteral:
+		//ok
+	case *RealLiteral:
+		//ok
+	case *StringLiteral:
+		//ok
+	case *SymbolLiteral:
+		//ok
+	case *LanguageKeyword:
+		//ok
 	case *Expr:
 		if x == nil {
 			return
 		}
+		lx.enum(x.Text)
 		lx.enum(x.Left)
 		lx.enum(x.Right)
+		for _, y := range x.Texts {
+			lx.enum(y)
+		}
 		for _, y := range x.List {
 			lx.enum(y)
 		}
@@ -667,6 +695,9 @@ func (lx *lexer) enum(x Syntax) {
 			return
 		}
 		lx.enum(x.Expr)
+		for _, y := range x.Prefix {
+			lx.enum(y)
+		}
 		for _, y := range x.Braced {
 			lx.enum(y)
 		}
@@ -689,10 +720,12 @@ func (lx *lexer) enum(x Syntax) {
 		lx.enum(x.Post)
 		lx.enum(x.Body)
 		lx.enum(x.Else)
+		lx.enum(x.Text)
 		for _, y := range x.Block {
 			lx.enum(y)
 		}
 	case *Label:
+		lx.enum(x.Name)
 		// ok
 	case *Decl:
 		if x == nil {
@@ -703,6 +736,7 @@ func (lx *lexer) enum(x Syntax) {
 		}
 		lx.enumSeen[x] = true
 		lx.enum(x.Type)
+		lx.enum(x.Name)
 		lx.enum(x.Init)
 		lx.enum(x.Body)
 	case *Type:
@@ -710,6 +744,8 @@ func (lx *lexer) enum(x Syntax) {
 			return
 		}
 		lx.enum(x.Base)
+		lx.enum(x.Tag)
+		lx.enum(x.Name)
 		for _, y := range x.Decls {
 			lx.enum(y)
 		}

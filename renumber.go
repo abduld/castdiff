@@ -12,6 +12,24 @@ func renumber(prog *Prog) {
 	}
 	Preorder(prog, func(x Syntax) {
 		switch x := x.(type) {
+		case nil:
+			return
+		case *EmptyLiteral:
+			x.Id = nextId()
+		case *BooleanLiteral:
+			x.Id = nextId()
+		case *IntegerLiteral:
+			x.Id = nextId()
+		case *CharLiteral:
+			x.Id = nextId()
+		case *RealLiteral:
+			x.Id = nextId()
+		case *StringLiteral:
+			x.Id = nextId()
+		case *SymbolLiteral:
+			x.Id = nextId()
+		case *LanguageKeyword:
+			x.Id = nextId()
 		case *Decl:
 			x.Id = nextId()
 		case *Init:

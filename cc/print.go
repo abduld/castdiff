@@ -72,6 +72,38 @@ func (p *Printer) Print(args ...interface{}) {
 			} else {
 				p.buf.WriteString(arg)
 			}
+		case EmptyLiteral:
+			p.Print(arg.String())
+		case *EmptyLiteral:
+			p.Print(arg.String())
+		case BooleanLiteral:
+			p.Print(arg.String())
+		case *BooleanLiteral:
+			p.Print(arg.String())
+		case IntegerLiteral:
+			p.Print(arg.String())
+		case *IntegerLiteral:
+			p.Print(arg.String())
+		case CharLiteral:
+			p.Print(arg.String())
+		case *CharLiteral:
+			p.Print(arg.String())
+		case RealLiteral:
+			p.Print(arg.String())
+		case *RealLiteral:
+			p.Print(arg.String())
+		case StringLiteral:
+			p.Print(arg.String())
+		case *StringLiteral:
+			p.Print(arg.String())
+		case SymbolLiteral:
+			p.Print(arg.String())
+		case *SymbolLiteral:
+			p.Print(arg.String())
+		case LanguageKeyword:
+			p.Print(arg.String())
+		case *LanguageKeyword:
+			p.Print(arg.String())
 		case exprPrec:
 			p.printExpr(arg.expr, arg.prec)
 		case *Expr:
@@ -201,6 +233,7 @@ var opPrec = []int{
 	Not:        precAddr,
 	NotEq:      precEqEq,
 	Number:     precNone,
+	Literal:    precNone,
 	Offsetof:   precAddr,
 	Or:         precOr,
 	OrEq:       precEq,
@@ -374,7 +407,7 @@ func (p *Printer) printExpr(x *Expr, prec int) {
 	case Index:
 		p.Print(exprPrec{x.Left, prec}, "[", exprPrec{x.Right, precLow}, "]")
 
-	case Name, Number:
+	case Name, Number, Literal:
 		p.Print(x.Text)
 
 	case String:

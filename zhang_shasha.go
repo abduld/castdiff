@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	. "github.com/abduld/castdiff/cc"
 	_ "runtime/debug"
+
+	. "github.com/abduld/castdiff/cc"
 )
 
 func populateHashMap(prog *Prog) map[int]Syntax {

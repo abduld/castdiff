@@ -112,6 +112,13 @@ func (x *Prog) GetId() int {
 	return x.Id
 }
 
+func (x *Prog) String() string {
+	var p Printer
+	p.hideComments = true
+	p.printProg(x)
+	return p.String()
+}
+
 func (x *Prog) GetChildren() []Syntax {
 	lst := []Syntax{}
 	for _, elem := range x.Decls {

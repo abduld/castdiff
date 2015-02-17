@@ -34,7 +34,6 @@
 package cc
 
 import (
-//"fmt"
 // "runtime/debug"
 )
 
@@ -47,7 +46,6 @@ type typeClass struct {
 type idecor struct {
 	d func(*Type) (*Type, Syntax)
 	i *Init
-	e *Expr
 }
 
 var id int = 0
@@ -100,56 +98,56 @@ func nextId() int {
 %token	<str>	tokSET
 %token	<str>	tokUSED
 
-%token	<langkey>	tokAuto
-%token	<langkey>	tokBreak
-%token	<langkey>	tokCase
-%token	<langkey>	tokChar
-%token	<langkey>	tokConst
-%token	<langkey>	tokContinue
-%token	<langkey>	tokDefault
-%token	<langkey>	tokDo
-%token	<langkey>	tokDotDotDot
-%token	<langkey>	tokDouble
-%token	<langkey>	tokEnum
-%token	<langkey>	tokError
-%token	<langkey>	tokExtern
-%token	<langkey>	tokFloat
-%token	<langkey>	tokFor
-%token	<langkey>	tokGoto
-%token	<langkey>	tokIf
-%token	<langkey>	tokInline
-%token	<langkey>	tokInt
-%token	<charlit>	tokLitChar
-%token	<langkey>	tokLong
-%token	<symlit>	tokName
+%token	<str>	tokAuto
+%token	<str>	tokBreak
+%token	<str>	tokCase
+%token	<str>	tokChar
+%token	<str>	tokConst
+%token	<str>	tokContinue
+%token	<str>	tokDefault
+%token	<str>	tokDo
+%token	<str>	tokDotDotDot
+%token	<str>	tokDouble
+%token	<str>	tokEnum
+%token	<str>	tokError
+%token	<str>	tokExtern
+%token	<str>	tokFloat
+%token	<str>	tokFor
+%token	<str>	tokGoto
+%token	<str>	tokIf
+%token	<str>	tokInline
+%token	<str>	tokInt
+%token	<str>	tokLitChar
+%token	<str>	tokLong
+%token	<str>	tokName
 %token	<intlit>	tokInteger
 %token	<reallit>	tokReal
-%token	<langkey>	tokOffsetof
-%token	<langkey>	tokRegister
-%token	<langkey>	tokReturn
-%token	<langkey>	tokShort
-%token	<langkey>	tokSigned
-%token	<langkey>	tokStatic
-%token	<langkey>	tokStruct
-%token	<langkey>	tokSwitch
-%token	<langkey>	tokTypeName
-%token	<langkey>	tokTypedef
-%token	<langkey>	tokUnion
-%token	<langkey>	tokUnsigned
-%token	<langkey>	tokVaArg
-%token	<langkey>	tokVoid
-%token	<langkey>	tokVolatile
-%token	<langkey>	tokWhile
-%token	<strlit>	tokString
+%token	<str>	tokOffsetof
+%token	<str>	tokRegister
+%token	<str>	tokReturn
+%token	<str>	tokShort
+%token	<str>	tokSigned
+%token	<str>	tokStatic
+%token	<str>	tokStruct
+%token	<str>	tokSwitch
+%token	<str>	tokTypeName
+%token	<str>	tokTypedef
+%token	<str>	tokUnion
+%token	<str>	tokUnsigned
+%token	<str>	tokVaArg
+%token	<str>	tokVoid
+%token	<str>	tokVolatile
+%token	<str>	tokWhile
+%token	<str>	tokString
 
 %token  <str>   tokLCuBrk
 %token  <str>   tokRCuBrk
 
-%token	<symlit>	tokDevice
-%token	<symlit>	tokHost
-%token	<symlit>	tokGlobal
-%token	<symlit>	tokShared
-%token	<symlit>	tokRestrict
+%token	<str>	tokDevice
+%token	<str>	tokHost
+%token	<str>	tokGlobal
+%token	<str>	tokShared
+%token	<str>	tokRestrict
 
 %type	<abdecor>	abdecor abdec1
 %type	<decl>	fnarg fndef edecl
@@ -210,7 +208,7 @@ func nextId() int {
 %right tokLCuBrk tokRCuBrk
 %left	tokString
 
-%nonassoc '('
+%left '('
 %token startProg	startExpr tokEOF
 
 %%
@@ -261,7 +259,11 @@ expr:
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
 			Id: nextId(),
 			Op: Name,
-			Text: $1,
+			Text: &SymbolLiteral{
+				Value: $1,
+				Id: nextId(), 
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			},
 			XDecl: $<decl>1,
 		}
 	}
@@ -271,7 +273,7 @@ expr:
 		$$ = &Expr{
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
 			Id: nextId(),
-			Op: Number,
+			Op: Literal,
 			Text: $1,
 		}
 	}
@@ -281,14 +283,22 @@ expr:
 		$$ = &Expr{
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
 			Id: nextId(),
-			Op: Number,
+			Op: Literal,
 			Text: $1,
 		}
 	}
 |	tokLitChar
 	{
 		$<span>$ = $<span>1
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Number, Text: $1}
+		$$ = &Expr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Op: Literal,
+			Text: &CharLiteral{
+				Value: $1[0],
+				Id: nextId(), 
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}}
 	}
 |	string_list
 	{
@@ -591,7 +601,16 @@ label:
 |	tokName ':'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Label{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: LabelName, Name: $1}
+		$$ = &Label{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Op: LabelName,
+			Name: &SymbolLiteral{
+				Value: $1,
+				Id: nextId(), 
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			},
+		}
 	}
 
 lstmt:
@@ -802,7 +821,15 @@ fnarg:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1, Id: nextId()}
+		$$ = &Decl{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Name: &SymbolLiteral{
+				Value: $1,
+				Id: nextId(), 
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			},
+			Id: nextId(),
+		}
 	}
 |	type abdecor
 	{
@@ -834,12 +861,12 @@ idecor:
 	decor
 	{
 		$<span>$ = $<span>1
-		$$ = idecor{$1, nil, nil}
+		$$ = idecor{$1, nil}
 	}
 |	decor '=' init
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = idecor{$1, $3, nil}
+		$$ = idecor{$1, $3}
 	}
 
 // Class words
@@ -847,32 +874,56 @@ cname:
 	tokAuto
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokStatic
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokExtern
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokTypedef
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokRegister
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokInline
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 
 // Qualifier words
@@ -880,37 +931,65 @@ qname:
 	tokConst
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 |	tokVolatile
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
 	}
 | tokDevice
   {
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
   }
 | tokHost
   {
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
   }
 | tokGlobal
   {
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
   }
 | tokShared
   {
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
   }
 | tokRestrict
   {
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			Value: $1,
+			Id: nextId(), 
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		}
   }
 
 // Type words
@@ -918,47 +997,83 @@ tname:
 	tokChar
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &LanguageKeyword{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokShort
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokInt
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokLong
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokSigned
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokUnsigned
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokFloat
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokDouble
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokVoid
 	{
 		$<span>$ = $<span>1
-		$$ = $1
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 
 cqname:
@@ -1081,12 +1196,25 @@ decl:
 		$$ = nil
 		for _, idec := range $2 {
 			typ, name := idec.d($1.t)
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i, Id: nextId()}
+			d := &Decl{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Name: name,
+				Type: typ,
+				Storage: $1.c,
+				Init: idec.i,
+				Id: nextId(),
+			}
 			lx.pushDecl(d);
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: &SymbolLiteral{}, Type: $1.t, Storage: $1.c, Id: nextId()}
+			d := &Decl{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Name: &SymbolLiteral{},
+				Type: $1.t,
+				Storage: $1.c,
+				Id: nextId(),
+			}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1103,7 +1231,14 @@ topdecl:
 			typ, name := idec.d($1.t)
 			d := lx.lookupDecl(name)
 			if d == nil {
-				d = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Storage: $1.c, Init: idec.i, Id: nextId()}
+				d = &Decl{
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+					Name: name,
+					Type: typ,
+					Storage: $1.c,
+					Init: idec.i,
+					Id: nextId(),
+				}
 				lx.pushDecl(d)
 			} else {
 				d.Span = $<span>$
@@ -1114,7 +1249,13 @@ topdecl:
 			$$ = append($$, d);
 		}
 		if $2 == nil {
-			d := &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: &SymbolLiteral{}, Type: $1.t, Storage: $1.c, Id: nextId()}
+			d := &Decl{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Name: &SymbolLiteral{},
+				Type: $1.t,
+				Storage: $1.c,
+				Id: nextId(),
+			}
 			lx.pushDecl(d);
 			$$ = append($$, d)
 		}
@@ -1174,12 +1315,20 @@ tag:
 	tokName
 	{
 		$<span>$ = $<span>1
-		$$ = $1.ToSymbolLiteral()
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 |	tokTypeName
 	{
 		$<span>$ = $<span>1
-		$$ = $1.ToSymbolLiteral()
+		$$ = &SymbolLiteral{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Value: $1,
+			Id: nextId(),
+		}
 	}
 
 // struct/union
@@ -1219,10 +1368,19 @@ sudecl:
 		$$ = nil
 		for _, decor := range $2 {
 			typ, name := decor($1)
-			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: name, Type: typ, Id: nextId()})
+			$$ = append($$, &Decl{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Name: name,
+				Type: typ,
+				Id: nextId(),
+			})
 		}
 		if $2 == nil {
-			$$ = append($$, &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: $1, Id: nextId()})
+			$$ = append($$, &Decl{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Type: $1,
+				Id: nextId(),
+			})
 		}
 	}
 
@@ -1230,12 +1388,23 @@ typespec:
 	structunion tag
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2, Id: nextId()})
+		$$ = yylex.(*lexer).pushType(&Type{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Kind: $1,
+			Tag: $2,
+			Id: nextId(),
+		})
 	}
 |	structunion tag_opt '{' sudecl_list '}'
 	{
 		$<span>$ = span($<span>1, $<span>5)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: $1, Tag: $2, Decls: $4, Id: nextId()})
+		$$ = yylex.(*lexer).pushType(&Type{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Kind: $1,
+			Tag: $2,
+			Decls: $4,
+			Id: nextId(),
+		})
 	}
 
 initprefix:
@@ -1278,7 +1447,16 @@ edecl:
 		if $2 != nil {
 			x = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $2, Id: nextId()}
 		}
-		$$ = &Decl{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Name: $1, Init: x, Id: nextId()}
+		$$ = &Decl{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Name: &SymbolLiteral{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Value: $1,
+				Id: nextId(),
+			},
+			Init: x,
+			Id: nextId(),
+		}
 		yylex.(*lexer).pushDecl($$);
 	}
 
@@ -1639,12 +1817,22 @@ string_list:
 	tokString
 	{
 		$<span>$ = $<span>1
-		$$ = []Syntax{$1}
+		$$ = []Syntax{
+			&StringLiteral{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Value: $1,
+				Id: nextId(),
+			},
+		}
 	}
 |	string_list tokString
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = append($1, $2)
+		$$ = append($1, &StringLiteral{
+				SyntaxInfo: SyntaxInfo{Span: $<span>2},
+				Value: $2,
+				Id: nextId(),
+		})
 	}
 
 

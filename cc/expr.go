@@ -34,6 +34,12 @@ func (x *Expr) GetId() int {
 
 func (x *Expr) GetChildren() []Syntax {
 	lst := []Syntax{}
+	if x.Text != nil {
+		lst = append(lst, x.Text)
+	}
+	if len(x.Texts) != 0 {
+		lst = append(lst, x.Texts...)
+	}
 	switch x.Op {
 	default:
 		if x.Type != nil {
@@ -143,6 +149,7 @@ const (
 	Not               // !Left
 	NotEq             // Left != Right
 	Number            // Text (numeric or chraracter constant)
+	Literal           // Text (numeric or chraracter constant)
 	Offsetof          // offsetof(Type, Left)
 	Or                // Left | Right
 	OrEq              // Left |= Right
@@ -203,6 +210,7 @@ var exprOpString = []string{
 	Not:        "Not",
 	NotEq:      "NotEq",
 	Number:     "Number",
+	Literal:    "Literal",
 	Offsetof:   "Offsetof",
 	Or:         "Or",
 	OrEq:       "OrEq",
@@ -285,55 +293,23 @@ func (x *Init) GetId() int {
 
 func (x *Init) GetChildren() []Syntax {
 	lst := []Syntax{}
-	if len(x.Prefix) != 0 {
-		for _, elem := range x.Prefix {
-			lst = append(lst, elem)
-		}
+	for _, elem := range x.Prefix {
+		lst = append(lst, elem)
 	}
 	if x.Expr != nil {
 		lst = append(lst, x.Expr)
 	}
-	if len(x.Braced) != 0 {
-		for _, elem := range x.Braced {
-			lst = append(lst, elem)
-		}
+	for _, elem := range x.Braced {
+		lst = append(lst, elem)
 	}
 	return lst
 }
 
 func (x *Init) String() string {
-	res := ""
-	if len(x.Prefix) > 0 {
-		for _, pre := range x.Prefix {
-			res += pre.String()
-		}
-		res += " = "
-	}
-	if x.Expr != nil {
-		res += x.Expr.String()
-	} else {
-		nl := len(x.Braced) > 0 && x.Braced[0].Span.Start.Line != x.Braced[len(x.Braced)-1].Span.End.Line
-		res += "{"
-		if nl {
-			res += "\t"
-		}
-		for i, y := range x.Braced {
-			if i > 0 {
-				res += ","
-			}
-			if nl {
-				res += "\n"
-			} else if i > 0 {
-				res += " "
-			}
-			res += y.String()
-		}
-		if nl {
-			res += "\n"
-		}
-		res += "}"
-	}
-	return res
+	var p Printer
+	p.hideComments = true
+	p.printInit(x)
+	return p.String()
 }
 
 // Walk traverses the syntax x, calling before and after on entry to and exit from
@@ -353,6 +329,9 @@ func Walk(x Syntax, before, after func(Syntax)) {
 }
 
 func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
+	if x == nil {
+		return
+	}
 	if seen[x] {
 		return
 	}
@@ -362,6 +341,22 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 	default:
 		panic(fmt.Sprintf("walk: unexpected type %T", x))
 
+	case *EmptyLiteral:
+		//ok
+	case *BooleanLiteral:
+		//ok
+	case *IntegerLiteral:
+		//ok
+	case *CharLiteral:
+		//ok
+	case *RealLiteral:
+		//ok
+	case *StringLiteral:
+		//ok
+	case *SymbolLiteral:
+		//ok
+	case *LanguageKeyword:
+		//ok
 	case *Prog:
 		for _, d := range x.Decls {
 			walk(d, before, after, seen)
@@ -387,8 +382,12 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 
 	case *Expr:
 		walk(x.Left, before, after, seen)
+		walk(x.Text, before, after, seen)
 		walk(x.Right, before, after, seen)
 		for _, y := range x.LaunchParams {
+			walk(y, before, after, seen)
+		}
+		for _, y := range x.Texts {
 			walk(y, before, after, seen)
 		}
 		for _, y := range x.List {
@@ -407,6 +406,7 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 		walk(x.Decl, before, after, seen)
 		walk(x.Body, before, after, seen)
 		walk(x.Else, before, after, seen)
+		walk(x.Text, before, after, seen)
 		for _, y := range x.Block {
 			walk(y, before, after, seen)
 		}
@@ -415,6 +415,7 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 		}
 
 	case *Label:
+		walk(x.Name, before, after, seen)
 		walk(x.Expr, before, after, seen)
 	}
 	after(x)
