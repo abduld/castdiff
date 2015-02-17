@@ -5,7 +5,7 @@ import (
 )
 
 func renumber(prog *Prog) {
-	var id int = 0
+	id := 0
 	nextId := func() int {
 		id++
 		return id

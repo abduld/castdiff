@@ -5,7 +5,7 @@ import (
 )
 
 func sizeOfAST(prog *Prog) int {
-	var n int = 0
+	n := 0
 	Postorder(prog, func(x Syntax) {
 		n++
 	})
