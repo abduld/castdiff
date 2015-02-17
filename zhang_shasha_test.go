@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"testing"
 
 	cc "github.com/abduld/castdiff/cc"
@@ -92,7 +91,7 @@ int x = 1;
 `
 
 func TestDistanceDecl(t *testing.T) {
-	p1, err := cc.ParseProg(src)
+	p1, err := cc.ParseProg(src0)
 	if err != nil {
 		t.Errorf("Unable to parse p1 -- %#q", err)
 		return
@@ -104,8 +103,6 @@ func TestDistanceDecl(t *testing.T) {
 			return
 		}
 	*/
-
-	fmt.Println("prog = ", p1.String())
 
 	if ASTDistance(p1, p1) != 0 {
 		t.Errorf("Distance between %#q, %#q was not expected", p1, p1)

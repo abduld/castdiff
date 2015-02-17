@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	. "github.com/abduld/castdiff/cc"
 	"sort"
+
+	. "github.com/abduld/castdiff/cc"
 )
 
 /* A key root is a node of T that either has a left
@@ -29,9 +30,6 @@ func keyroots(prog *Prog) []Syntax {
 		skr[i] = lmc[v]
 	}
 	fmt.Println("leaf count = ", leafCount(prog))
-	for k, v := range lmc {
-		fmt.Println(k, " >= ", v)
-	}
 	for k, v := range skr {
 		fmt.Println(k, " = ", v)
 	}

@@ -33,7 +33,7 @@ func leftMostChild(prog *Prog) map[int]Syntax {
 				lmc[x.Id] = x
 			} else if x.Body != nil {
 				lmc[x.Id] = lmc[x.Body.Id]
-			} else if x.Name.String() == "" {
+			} else if x.Name != nil && x.Name.String() == "" {
 				lmc[x.Id] = lmc[x.Type.Id]
 			} else {
 				lmc[x.Id] = x
