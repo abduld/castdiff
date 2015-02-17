@@ -44,8 +44,10 @@ func forestDistance(
 ) {
 	i := kr1[x]
 	j := kr2[y]
-	yDim := imax(i.GetId()-l1[i.GetId()].GetId()+1, 1)
-	xDim := imax(j.GetId()-l2[j.GetId()].GetId()+1, 1)
+	iid := iid
+	jid := jid
+	yDim := imax(iid-l1[iid].GetId()+1, 1)
+	xDim := imax(jid-l2[jid].GetId()+1, 1)
 	fd := make([][]float32, yDim)
 	for ii := range fd {
 		fd[ii] = make([]float32, xDim)
@@ -66,13 +68,13 @@ func forestDistance(
 					fd[di][dj-1]+insertPenatly,
 					fd[di-1][dj-1]+renamePenalty,
 				)
-				td[di+i.GetId()-1][dj+j.GetId()-1] = 0
+				td[di+iid-1][dj+jid-1] = 0
 			} else {
 				fd[di][dj] = fmin3(
 					fd[di-1][dj]+deletePenatly,
 					fd[di][dj-1]+insertPenatly,
-					fd[l1[di].GetId()-l1[i.GetId()].GetId()-1][l2[dj].GetId()-l2[j.GetId()].GetId()-1]+
-						td[di+i.GetId()-1][dj+j.GetId()-1],
+					fd[l1[di].GetId()-l1[iid].GetId()-1][l2[dj].GetId()-l2[jid].GetId()-1]+
+						td[di+iid-1][dj+jid-1],
 				)
 			}
 		}
