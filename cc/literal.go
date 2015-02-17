@@ -108,7 +108,11 @@ func (x *StringLiteral) GetId() int {
 }
 
 func (x *StringLiteral) String() string {
-	return x.Value
+	if x == nil {
+		return ""
+	} else {
+		return x.Value
+	}
 }
 
 func (x *StringLiteral) GetChildren() []Syntax {
@@ -134,7 +138,11 @@ func (x *SymbolLiteral) GetId() int {
 }
 
 func (x *SymbolLiteral) String() string {
-	return x.Value
+	if x == nil {
+		return ""
+	} else {
+		return x.Value
+	}
 }
 
 func (x *SymbolLiteral) GetChildren() []Syntax {
@@ -156,7 +164,11 @@ func (x *LanguageKeyword) GetId() int {
 }
 
 func (x *LanguageKeyword) String() string {
-	return x.Value
+	if x == nil {
+		return ""
+	} else {
+		return x.Value
+	}
 }
 
 func (x *LanguageKeyword) GetChildren() []Syntax {
