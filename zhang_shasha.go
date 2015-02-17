@@ -7,27 +7,6 @@ import (
 	. "github.com/abduld/castdiff/cc"
 )
 
-func populateHashMap(prog *Prog) map[int]Syntax {
-	hm := map[int]Syntax{}
-	Preorder(prog, func(x Syntax) {
-		switch x := x.(type) {
-		case *Decl:
-			hm[x.Id] = x
-		case *Init:
-			hm[x.Id] = x
-		case *Type:
-			hm[x.Id] = x
-		case *Expr:
-			hm[x.Id] = x
-		case *Stmt:
-			hm[x.Id] = x
-		case *Label:
-			hm[x.Id] = x
-		}
-	})
-	return hm
-}
-
 func imax(a, b int) int {
 	if a > b {
 		return a
@@ -131,6 +110,5 @@ func ASTDistance(p1, p2 *Prog) int {
 	}
 	fmt.Println(td)
 	fmt.Println("edit distance = ", td[t1Size-1][t2Size-1])
-	//hm := populateHashMap(p1)
 	return 0
 }
