@@ -2,25 +2,20 @@ package ast
 
 import "fmt"
 
-type Decl struct {
+type DeclStmt struct {
 	SyntaxInfo
-	Id      int
-	Name    Syntax
-	Type    *Type
-	Storage Storage
-	Init    *Init
-	Body    *Stmt
-
-	XOuter    *Decl
-	CurFn     *Decl
-	OuterType *Type
+	Id      int           `json:"id"`
+	Type    Type          `json:"type"`
+	Storage Storage       `json:"storage"`
+	Name    SymbolLiteral `json:"name"`
+	Init    Expr          `json:"init"`
 }
 
-func (x *Decl) GetId() int {
+func (x *DeclStmt) GetId() int {
 	return x.Id
 }
 
-func (x *Decl) GetChildren() []Syntax {
+func (x *DeclStmt) GetChildren() []Syntax {
 	lst := []Syntax{}
 	if x.Type != nil {
 		lst = append(lst, x.Type)
@@ -37,13 +32,13 @@ func (x *Decl) GetChildren() []Syntax {
 	return lst
 }
 
-func (d *Decl) String() string {
+func (d *DeclStmt) String() string {
 	if d == nil {
-		return "nil Decl"
+		return "nil DeclStmt"
 	}
 	if d.Init != nil {
-		return fmt.Sprintf("Decl<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
+		return fmt.Sprintf("DeclStmt<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
 	} else {
-		return fmt.Sprintf("Decl<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
+		return fmt.Sprintf("DeclStmt<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
 	}
 }
