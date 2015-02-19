@@ -44,8 +44,8 @@ func forestDistance(
 ) {
 	i := kr1[x]
 	j := kr2[y]
-	iid := iid
-	jid := jid
+	iid := i.GetId()
+	jid := j.GetId()
 	yDim := imax(iid-l1[iid].GetId()+1, 1)
 	xDim := imax(jid-l2[jid].GetId()+1, 1)
 	fd := make([][]float32, yDim)
