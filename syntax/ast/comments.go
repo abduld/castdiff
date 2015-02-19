@@ -9,3 +9,8 @@ type Comments struct {
 	// comments following the syntax.
 	After []Comment
 }
+type Comment struct {
+	Span
+	Text   string
+	Suffix bool
+}

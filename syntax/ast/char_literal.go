@@ -4,8 +4,9 @@ import "encoding/json"
 
 type CharLiteral struct {
 	SyntaxInfo
-	Id    int
-	Value byte
+	Kind  string `json:"kind"`
+	Id    int    `json:"id"`
+	Value byte   `json:"value"`
 }
 
 func (x *CharLiteral) GetId() int {
@@ -21,6 +22,9 @@ func (x *CharLiteral) GetChildren() []Syntax {
 }
 
 func (x *CharLiteral) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "CharLiteral"
+	}
 	return json.Marshal(*x)
 
 }

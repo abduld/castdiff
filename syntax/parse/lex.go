@@ -488,12 +488,6 @@ func (l Span) String() string {
 	return fmt.Sprintf("%s:%d", l.Start.File, l.Start.Line)
 }
 
-type Comment struct {
-	Span
-	Text   string
-	Suffix bool
-}
-
 func (c Comment) GetSpan() Span {
 	return c.Span
 }

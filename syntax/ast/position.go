@@ -15,7 +15,7 @@ func (p *Position) MarshalJSON() ([]byte, error) {
 	if p != nil {
 		p.Kind = "Position"
 	}
-	return json.Marshal(m)
+	return json.Marshal(*p)
 }
 
 func (p *Position) UnmarshalJSON(text []byte) error {

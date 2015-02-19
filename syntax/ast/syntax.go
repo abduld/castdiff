@@ -25,8 +25,8 @@ type Syntax interface {
 
 // SyntaxInfo contains metadata about a piece of syntax.
 type SyntaxInfo struct {
-	Span     Span     `json:"span"` // location of syntax in input
-	Comments Comments `json:"comments,omitempty"`
+	Span     Span     `json:"-"` // location of syntax in input
+	Comments Comments `json:"-"`
 }
 
 func (s *SyntaxInfo) GetSpan() Span {

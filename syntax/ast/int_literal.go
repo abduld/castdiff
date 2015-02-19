@@ -7,8 +7,9 @@ import (
 
 type IntegerLiteral struct {
 	SyntaxInfo
-	Id    int
-	Value int
+	Kind  string `json:"kind"`
+	Id    int    `json:"id"`
+	Value int    `json:"value"`
 }
 
 func (x *IntegerLiteral) GetId() int {
@@ -28,6 +29,9 @@ func (x *IntegerLiteral) GetChildren() []Syntax {
 }
 
 func (x *IntegerLiteral) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "IntegerLiteral"
+	}
 	return json.Marshal(*x)
 
 }

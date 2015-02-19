@@ -4,7 +4,8 @@ import "encoding/json"
 
 type EmptyLiteral struct {
 	SyntaxInfo
-	Id int
+	Kind string `json:"kind"`
+	Id   int    `json:"id"`
 }
 
 func (x *EmptyLiteral) GetId() int {
@@ -20,6 +21,9 @@ func (x *EmptyLiteral) GetChildren() []Syntax {
 }
 
 func (x *EmptyLiteral) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "EmptyLiteral"
+	}
 	return json.Marshal(*x)
 
 }

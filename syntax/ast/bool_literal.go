@@ -4,8 +4,9 @@ import "encoding/json"
 
 type BooleanLiteral struct {
 	SyntaxInfo
-	Id    int
-	Value bool
+	Kind  string `json:"kind"`
+	Id    int    `json:"id"`
+	Value bool   `json:"value"`
 }
 
 func (x *BooleanLiteral) GetId() int {
@@ -25,6 +26,9 @@ func (x *BooleanLiteral) GetChildren() []Syntax {
 }
 
 func (x *BooleanLiteral) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "BooleanLiteral"
+	}
 	return json.Marshal(*x)
 
 }

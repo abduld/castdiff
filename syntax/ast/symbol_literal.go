@@ -1,9 +1,12 @@
 package ast
 
+import "encoding/json"
+
 type SymbolLiteral struct {
 	SyntaxInfo
-	Id    int
-	Value string
+	Kind  string `json:"kind"`
+	Id    int    `json:"id"`
+	Value string `json:"value"`
 }
 
 func (x *SymbolLiteral) GetId() int {
@@ -24,4 +27,15 @@ func (x *SymbolLiteral) GetChildren() []Syntax {
 
 func (x *SymbolLiteral) ToSymbolLiteral() *SymbolLiteral {
 	return x
+}
+
+func (x *SymbolLiteral) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "SymbolLiteral"
+	}
+	return json.Marshal(*x)
+
+}
+func (x *SymbolLiteral) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, x)
 }
