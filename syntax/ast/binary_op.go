@@ -27,7 +27,7 @@ const (
 	Xor             // Left ^ Right
 )
 
-var exprOpString = []string{
+var binaryOpString = []string{
 	Add:    "Add",
 	And:    "And",
 	AndAnd: "AndAnd",
@@ -49,7 +49,7 @@ var exprOpString = []string{
 	Xor:    "Xor",
 }
 
-var exprOpInfix = []string{
+var binaryOpInfix = []string{
 	Add:    "+",
 	And:    "&",
 	AndAnd: "&&",
@@ -71,16 +71,16 @@ var exprOpInfix = []string{
 	Xor:    "^",
 }
 
-func (op ExprOp) Name() string {
-	if 0 <= int(op) && int(op) <= len(exprOpString) {
-		return exprOpString[op]
+func (op BinaryOp) Name() string {
+	if 0 <= int(op) && int(op) <= len(binaryOpString) {
+		return binaryOpString[op]
 	}
-	return fmt.Sprintf("ExprOp(%d)", op)
+	return fmt.Sprintf("BinaryOp(%d)", op)
 }
 
-func (op ExprOp) String() string {
-	if 0 <= int(op) && int(op) <= len(exprOpInfix) {
-		return exprOpInfix[op]
+func (op BinaryOp) String() string {
+	if 0 <= int(op) && int(op) <= len(binaryOpInfix) {
+		return binaryOpInfix[op]
 	}
-	return fmt.Sprintf("ExprOp(%d)", op)
+	return fmt.Sprintf("BinaryOp(%d)", op)
 }

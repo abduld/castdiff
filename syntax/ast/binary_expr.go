@@ -1,4 +1,4 @@
-package expr
+package ast
 
 import "encoding/json"
 
@@ -7,8 +7,8 @@ type BinaryExpr struct {
 	Kind  string   `json:"kind"`
 	Id    int      `json:"id"`
 	Op    BinaryOp `json:"op"`
-	Left  *Expr    `json:"left"`
-	Right *Expr    `json:"right"`
+	Left  Expr     `json:"left"`
+	Right Expr     `json:"right"`
 }
 
 func (x *BinaryExpr) GetId() int {
@@ -21,8 +21,9 @@ func (x *BinaryExpr) String() string {
 	str += x.Left.String()
 	return str
 }
+
 func (x *BinaryExpr) GetChildren() []Syntax {
-	return []Syntax{Left, Right}
+	return []Syntax{x.Left, x.Right}
 }
 
 func (x *BinaryExpr) MarshalJSON() ([]byte, error) {

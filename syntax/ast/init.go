@@ -5,7 +5,7 @@ type Init struct {
 	SyntaxInfo
 	Id     int
 	Prefix []*Prefix // list of prefixes
-	Expr   *Expr     // Expr
+	Expr   Expr      // Expr
 	Braced []*Init   // {Braced}
 
 	XType *Type // derived type
