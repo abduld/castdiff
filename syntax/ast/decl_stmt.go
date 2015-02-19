@@ -26,9 +26,6 @@ func (x *DeclStmt) GetChildren() []Syntax {
 	if x.Init != nil {
 		lst = append(lst, x.Init)
 	}
-	if x.Body != nil {
-		lst = append(lst, x.Body)
-	}
 	return lst
 }
 
