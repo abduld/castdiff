@@ -4,11 +4,11 @@ import "encoding/json"
 
 type BinaryExpr struct {
 	SyntaxInfo
-	Kind  string `json:"kind"`
-	Id    int    `json:"id"`
-	Op    ExprOp `json:"op"`
-	Left  *Expr  `json:"left"`
-	Right *Expr  `json:"right"`
+	Kind  string   `json:"kind"`
+	Id    int      `json:"id"`
+	Op    AssignOp `json:"op"`
+	Left  *Expr    `json:"left"`
+	Right *Expr    `json:"right"`
 }
 
 func (x *BinaryExpr) GetId() int {
