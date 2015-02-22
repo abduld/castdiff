@@ -5,7 +5,7 @@ import "fmt"
 type DeclStmt struct {
 	SyntaxInfo
 	Id      int           `json:"id"`
-	Type    Type          `json:"type"`
+	Type    *Type          `json:"type"`
 	Storage Storage       `json:"storage"`
 	Name    SymbolLiteral `json:"name"`
 	Init    Expr          `json:"init"`
