@@ -1,5 +1,7 @@
 package ast
 
+import "encoding/json"
+
 type IfStmt struct {
 	SyntaxInfo
 	Kind string `json:"kind"`
