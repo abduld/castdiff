@@ -95,7 +95,7 @@ float x = 2;
 `
 
 func TestDistanceDecl(t *testing.T) {
-	p1, err := cc.ParseProg(src0)
+	p1, err := cc.ParseProg(src2)
 	if err != nil {
 		t.Errorf("Unable to parse p1 -- %#q", err)
 		return

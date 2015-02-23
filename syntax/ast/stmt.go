@@ -11,7 +11,7 @@ type Stmt struct {
 	Pre    *Expr
 	Expr   *Expr
 	Post   *Expr
-	Decl   *Decl
+	Decl   *DeclStmt
 	Body   *Stmt
 	Else   *Stmt
 	Block  []*Stmt

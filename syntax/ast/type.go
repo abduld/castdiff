@@ -8,13 +8,13 @@ import "strconv"
 
 type Type struct {
 	SyntaxInfo
-	Id    int      `json:"id"`
-	Kind  TypeKind `json:"kind"`
-	Qual  TypeQual `json:"qual"`
-	Base  *Type    `json:"base"`
-	Tag   Syntax   `json:"tag"`
-	Decls []*Decl  `json:"decls"`
-	Name  Syntax   `json:"name"`
+	Id    int          `json:"id"`
+	Kind  TypeKind     `json:"kind"`
+	Qual  TypeQual     `json:"qual"`
+	Base  *Type        `json:"base"`
+	Tag   Syntax       `json:"tag"`
+	Decls []*DeclStmt  `json:"decls"`
+	Name  Syntax       `json:"name"`
 }
 
 func (x *Type) GetId() int {

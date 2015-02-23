@@ -17,7 +17,7 @@ func (x *BlockStmt) GetId() int {
 }
 
 func (x *BlockStmt) String() string {
-	sstmts := make([]string, len(x.Args))
+	sstmts := make([]string, len(x.Stmts))
 	for ii, stmt := range x.Stmts {
 		sstmts[ii] = stmt.String()
 	}
@@ -25,10 +25,9 @@ func (x *BlockStmt) String() string {
 }
 
 func (x *BlockStmt) GetChildren() []Syntax {
-	children := make([]Syntax, len(x.Args)+1)
-	children[0] = x.Callee
+	children := make([]Syntax, len(x.Stmts))
 	for ii, stmt := range x.Stmts {
-		children[ii+1] = stmt
+		children[ii] = &stmt
 	}
 	return children
 }

@@ -5,7 +5,7 @@ type Prefix struct {
 	Span  Span
 	Id    int
 	Dot   Syntax // .Dot =
-	XDecl *Decl  // for .Dot
+	XDecl *DeclStmt  // for .Dot
 	Index *Expr  // [Index] =
 }
 

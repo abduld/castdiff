@@ -13,7 +13,7 @@ func (x *BreakStmt) GetId() int {
 }
 
 func (x *BreakStmt) String() string {
-	return "continue"
+	return "break"
 }
 
 func (x *BreakStmt) GetChildren() []Syntax {
