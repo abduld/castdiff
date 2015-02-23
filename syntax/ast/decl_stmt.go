@@ -7,7 +7,7 @@ type DeclStmt struct {
 	Id      int           `json:"id"`
 	Type    *Type          `json:"type"`
 	Storage Storage       `json:"storage"`
-	Name    SymbolLiteral `json:"name"`
+	Name    *SymbolLiteral `json:"name"`
 	Init    Expr          `json:"init"`
 }
 
