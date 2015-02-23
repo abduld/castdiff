@@ -27,6 +27,6 @@ func (x *ReturnStmt) MarshalJSON() ([]byte, error) {
 	return json.Marshal(*x)
 
 }
-func (x *BreakStmt) UnmarshalJSON(data []byte) error {
+func (x *ReturnStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }
