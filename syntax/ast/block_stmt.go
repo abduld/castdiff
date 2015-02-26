@@ -27,7 +27,7 @@ func (x *BlockStmt) String() string {
 func (x *BlockStmt) GetChildren() []Syntax {
 	children := make([]Syntax, len(x.Stmts))
 	for ii, stmt := range x.Stmts {
-		children[ii] = &stmt
+		children[ii] = stmt
 	}
 	return children
 }
@@ -41,4 +41,7 @@ func (x *BlockStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *BlockStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+func (b *BlockStmt) IsStmt() bool {
+	return true
 }

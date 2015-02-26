@@ -39,3 +39,6 @@ func (d *DeclStmt) String() string {
 		return fmt.Sprintf("DeclStmt<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
 	}
 }
+func (d *DeclStmt) IsStmt() bool {
+	return true
+}
