@@ -8,13 +8,13 @@ type Stmt struct {
 	SyntaxInfo
 	Id     int
 	Op     StmtOp
-	Pre    *Expr
-	Expr   *Expr
-	Post   *Expr
+	Pre    Expr
+	Expr   Expr
+	Post   Expr
 	Decl   *DeclStmt
 	Body   *Stmt
 	Else   *Stmt
-	Block  []*Stmt
+	Block  []Stmt
 	Labels []*Label
 	Text   Syntax
 	Type   *Type

@@ -4,9 +4,9 @@ import "encoding/json"
 
 type Label struct {
 	SyntaxInfo
-	Kind  string       `json:"kind"`
-	Id    int          `json:"id"`
-	Name SymbolLiteral `json:"label"`
+	Kind string         `json:"kind"`
+	Id   int            `json:"id"`
+	Name *SymbolLiteral `json:"label"`
 }
 
 func (x *Label) GetId() int {
@@ -22,7 +22,7 @@ func (x *Label) GetChildren() []Syntax {
 }
 
 func (x *Label) ToSymbolLiteral() *SymbolLiteral {
-	return &x.Name
+	return x.Name
 }
 
 func (x *Label) MarshalJSON() ([]byte, error) {

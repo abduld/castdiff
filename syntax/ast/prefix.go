@@ -4,9 +4,9 @@ package ast
 type Prefix struct {
 	Span  Span
 	Id    int
-	Dot   Syntax // .Dot =
-	XDecl *DeclStmt  // for .Dot
-	Index *Expr  // [Index] =
+	Dot   Syntax    // .Dot =
+	XDecl *DeclStmt // for .Dot
+	Index Expr      // [Index] =
 }
 
 func (x *Prefix) GetId() int {

@@ -19,7 +19,7 @@ func (x *FuncStmt) GetId() int {
 
 func (x *FuncStmt) String() string {
 	ret := ""
-	ret += x.RetType.String() + " " + x.Name.String() + "( "
+	ret += x.ReturnType.String() + " " + x.Name.String() + "( "
 	for _, elem := range x.Args {
 		ret += elem.String() + ", "
 	}
@@ -33,7 +33,7 @@ func (x *FuncStmt) String() string {
 }
 
 func (x *FuncStmt) GetChildren() []Syntax {
-	children := []Syntax{x.RetType, x.Name}
+	children := []Syntax{x.ReturnType, x.Name}
 	for _, arg := range x.Args {
 		children = append(children, &arg)
 	}
