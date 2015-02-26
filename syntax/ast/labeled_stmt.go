@@ -19,11 +19,7 @@ func (x *LabeledStmt) String() string {
 }
 
 func (x *LabeledStmt) GetChildren() []Syntax {
-	return []Syntax{x.Label, x.Expr}
-}
-
-func (x *LabeledStmt) ToSymbolLiteral() *SymbolLiteral {
-	return x
+	return []Syntax{&x.Label, x.Expr}
 }
 
 func (x *LabeledStmt) MarshalJSON() ([]byte, error) {

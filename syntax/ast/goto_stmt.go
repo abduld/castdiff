@@ -18,7 +18,7 @@ func (x *GotoStmt) String() string {
 }
 
 func (x *GotoStmt) GetChildren() []Syntax {
-	return []Syntax{x.Target}
+	return []Syntax{&x.Target}
 }
 
 func (x *GotoStmt) MarshalJSON() ([]byte, error) {

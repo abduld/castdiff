@@ -4,11 +4,11 @@ import "fmt"
 
 type DeclStmt struct {
 	SyntaxInfo
-	Id      int           `json:"id"`
+	Id      int            `json:"id"`
 	Type    *Type          `json:"type"`
-	Storage Storage       `json:"storage"`
-	Name    SymbolLiteral `json:"name"`
-	Init    Expr          `json:"init"`
+	Storage Storage        `json:"storage"`
+	Name    *SymbolLiteral `json:"name"`
+	Init    Expr           `json:"init"`
 }
 
 func (x *DeclStmt) GetId() int {

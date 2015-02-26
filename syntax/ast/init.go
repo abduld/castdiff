@@ -30,8 +30,9 @@ func (x *Init) GetChildren() []Syntax {
 }
 
 func (x *Init) String() string {
-	var p Printer
-	p.hideComments = true
-	p.printInit(x)
-	return p.String()
+        ret := ""
+	for _, elem := range x.Prefix {
+		ret += elem.String() + "\n"
+	}
+	return ret
 }
