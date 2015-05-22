@@ -8,7 +8,7 @@ import (
 	"log"
 	"os"
 
-	cc "github.com/abduld/castdiff/syntax"
+	cc "github.com/abduld/castdiff/cc"
 )
 
 var (

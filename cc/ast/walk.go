@@ -15,11 +15,11 @@ func Walk(x Syntax, before, after func(Syntax)) {
 		(*StringLiteral)(nil):   true,
 		(*SymbolLiteral)(nil):   true,
 		(*LanguageKeyword)(nil): true,
-		(*Decl)(nil):            true,
+		(*DeclStmt)(nil):        true,
 		(*Init)(nil):            true,
 		(*Type)(nil):            true,
-		(*Expr)(nil):            true,
-		(*Stmt)(nil):            true,
+		(Expr)(nil):             true,
+		(Stmt)(nil):             true,
 		(*Label)(nil):           true,
 	}
 	walk(x, before, after, seen)
@@ -54,15 +54,16 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 		//ok
 	case *LanguageKeyword:
 		//ok
-	case *Prog:
-		for _, d := range x.Decls {
-			walk(d, before, after, seen)
-		}
-
-	case *Decl:
+	/*
+		case *Prog:
+			for _, d := range x.Decls {
+				walk(d, before, after, seen)
+			}
+	*/
+	case *DeclStmt:
 		walk(x.Type, before, after, seen)
+		walk(x.Name, before, after, seen)
 		walk(x.Init, before, after, seen)
-		walk(x.Body, before, after, seen)
 
 	case *Init:
 		for _, b := range x.Braced {
@@ -75,45 +76,44 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 		for _, d := range x.Decls {
 			walk(d, before, after, seen)
 		}
-		walk(x.Width, before, after, seen)
+		//walk(x.Width, before, after, seen)
+		/*
+					case *Expr:
+						walk(x.Left, before, after, seen)
+						walk(x.Text, before, after, seen)
+						walk(x.Right, before, after, seen)
+						for _, y := range x.LaunchParams {
+							walk(y, before, after, seen)
+						}
+						for _, y := range x.Texts {
+							walk(y, before, after, seen)
+						}
+						for _, y := range x.List {
+							walk(y, before, after, seen)
+						}
+						walk(x.Type, before, after, seen)
+						walk(x.Init, before, after, seen)
+						for _, y := range x.Block {
+							walk(y, before, after, seen)
+						}
+			case *Stmt:
+				walk(x.Pre, before, after, seen)
+				walk(x.Expr, before, after, seen)
+				walk(x.Post, before, after, seen)
+				walk(x.Decl, before, after, seen)
+				walk(x.Body, before, after, seen)
+				walk(x.Else, before, after, seen)
+				walk(x.Text, before, after, seen)
+				for _, y := range x.Block {
+					walk(y, before, after, seen)
+				}
+				for _, y := range x.Labels {
+					walk(y, before, after, seen)
+				}
 
-	case *Expr:
-		walk(x.Left, before, after, seen)
-		walk(x.Text, before, after, seen)
-		walk(x.Right, before, after, seen)
-		for _, y := range x.LaunchParams {
-			walk(y, before, after, seen)
-		}
-		for _, y := range x.Texts {
-			walk(y, before, after, seen)
-		}
-		for _, y := range x.List {
-			walk(y, before, after, seen)
-		}
-		walk(x.Type, before, after, seen)
-		walk(x.Init, before, after, seen)
-		for _, y := range x.Block {
-			walk(y, before, after, seen)
-		}
-
-	case *Stmt:
-		walk(x.Pre, before, after, seen)
-		walk(x.Expr, before, after, seen)
-		walk(x.Post, before, after, seen)
-		walk(x.Decl, before, after, seen)
-		walk(x.Body, before, after, seen)
-		walk(x.Else, before, after, seen)
-		walk(x.Text, before, after, seen)
-		for _, y := range x.Block {
-			walk(y, before, after, seen)
-		}
-		for _, y := range x.Labels {
-			walk(y, before, after, seen)
-		}
-
+		*/
 	case *Label:
 		walk(x.Name, before, after, seen)
-		walk(x.Expr, before, after, seen)
 	}
 	after(x)
 }

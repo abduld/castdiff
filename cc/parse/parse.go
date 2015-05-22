@@ -11,6 +11,8 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
+
+	. "github.com/abduld/castdiff/cc/ast"
 )
 
 func Read(name string, r io.Reader) (*Prog, error) {

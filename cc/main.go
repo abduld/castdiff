@@ -3,4 +3,10 @@
 // license that can be found in the LICENSE file.
 
 // Package cc implements parsing, type checking, and printing of C programs.
-package cc 
+package cc
+
+import (
+	. "github.com/abduld/castdiff/cc/ast"
+	. "github.com/abduld/castdiff/cc/parse"
+	. "github.com/abduld/castdiff/cc/utils"
+)

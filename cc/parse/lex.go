@@ -41,7 +41,7 @@ type lexer struct {
 }
 
 type Header struct {
-	decls []*Decl
+	decls []*DeclStmt
 	types []*Type
 }
 

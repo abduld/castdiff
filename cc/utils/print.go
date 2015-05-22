@@ -8,6 +8,8 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+
+	. "github.com/abduld/castdiff/cc/ast"
 )
 
 type special int
@@ -20,10 +22,10 @@ const (
 )
 
 type Printer struct {
-	buf          bytes.Buffer
-	indent       int
-	html         bool
-	suffix       []Comment // suffix comments to print at next newline
+	buf    bytes.Buffer
+	indent int
+	html   bool
+	//	suffix       []Comment // suffix comments to print at next newline
 	hideComments bool
 }
 
