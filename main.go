@@ -1,14 +1,14 @@
-
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
 
-	cc "github.com/abduld/castdiff/cc"
+	cc "github.com/abduld/castdiff/syntax"
 )
 
 var (
@@ -48,5 +48,9 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(prog)
+	b, err := json.Marshal(prog)
+	if err == nil {
+		os.Stdout.Write(b)
+	}
+	//fmt.Println(prog)
 }
