@@ -2,13 +2,20 @@ package ast
 
 import "encoding/json"
 
+type CastOp int
+
+const (
+	_        CastOp = iota + 0x10000
+	Cast            // (Type)Left
+	CastInit        // (Type){Init}
+)
+
 type CastExpr struct {
 	SyntaxInfo
-	Kind string   `json:"kind"`
-	Id   int      `json:"id"`
-	Op   AssignOp `json:"op"`
-	Type *Type    `json:"type"`
-	Expr Expr     `json:"expr"`
+	Kind string `json:"kind"`
+	Id   int    `json:"id"`
+	Type *Type  `json:"type"`
+	Expr Expr   `json:"expr"`
 }
 
 func (x *CastExpr) GetId() int {

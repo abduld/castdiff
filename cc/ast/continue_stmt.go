@@ -30,3 +30,7 @@ func (x *ContinueStmt) MarshalJSON() ([]byte, error) {
 func (x *ContinueStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }
+
+func (x *ContinueStmt) IsStmt() bool {
+	return true
+}

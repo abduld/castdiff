@@ -5,7 +5,7 @@ import "fmt"
 type AssignOp int
 
 const (
-	_     AssignOp = iota
+	_     AssignOp = iota + 0x100
 	AddEq          // Left += Right
 	AndEq          // Left &= Right
 	DivEq          // Left /= Right

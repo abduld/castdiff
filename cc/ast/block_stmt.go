@@ -45,3 +45,6 @@ func (x *BlockStmt) UnmarshalJSON(data []byte) error {
 func (b *BlockStmt) IsStmt() bool {
 	return true
 }
+func (b *BlockStmt) IsBlock() bool {
+	return true
+}

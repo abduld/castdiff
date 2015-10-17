@@ -32,3 +32,6 @@ func (x *DoStmt) MarshalJSON() ([]byte, error) {
 func (x *DoStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }
+func (x *DoStmt) IsStmt() bool {
+	return true
+}

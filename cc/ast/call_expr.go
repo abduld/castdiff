@@ -5,6 +5,17 @@ import (
 	"strings"
 )
 
+type CallOp int
+
+const (
+	_          CallOp = iota + 0x1000
+	Call              // Left(List)
+	CUDACall          // Left(List)
+	SizeofExpr        // sizeof(Left)
+	SizeofType        // sizeof(Type)
+	Offsetof          // offsetof(Type, Left)
+)
+
 type CallExpr struct {
 	SyntaxInfo
 	Kind   string `json:"kind"`

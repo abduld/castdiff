@@ -30,3 +30,7 @@ func (x *BreakStmt) MarshalJSON() ([]byte, error) {
 func (x *BreakStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }
+
+func (x *BreakStmt) IsStmt() bool {
+	return true
+}

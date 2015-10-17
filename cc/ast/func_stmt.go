@@ -50,3 +50,7 @@ func (x *FuncStmt) MarshalJSON() ([]byte, error) {
 func (x *FuncStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }
+
+func (x *FuncStmt) IsStmt() bool {
+	return true
+}

@@ -6,6 +6,7 @@ type ReturnStmt struct {
 	SyntaxInfo
 	Kind string `json:"kind"`
 	Id   int    `json:"id"`
+	Value Expr `json:"value"`
 }
 
 func (x *ReturnStmt) GetId() int {
@@ -13,11 +14,11 @@ func (x *ReturnStmt) GetId() int {
 }
 
 func (x *ReturnStmt) String() string {
-	return "return"
+	return "return " + x.Value.String() + ";"
 }
 
 func (x *ReturnStmt) GetChildren() []Syntax {
-	return []Syntax{}
+	return []Syntax{x.Value}
 }
 
 func (x *ReturnStmt) MarshalJSON() ([]byte, error) {
@@ -29,4 +30,8 @@ func (x *ReturnStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *ReturnStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+
+func (x *ReturnStmt) IsStmt() bool {
+	return true
 }

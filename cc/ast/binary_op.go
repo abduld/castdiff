@@ -5,7 +5,7 @@ import "fmt"
 type BinaryOp int
 
 const (
-	_      BinaryOp = iota
+	_      BinaryOp = iota + 0x40
 	Add             // Left + Right
 	And             // Left & Right
 	AndAnd          // Left && Right

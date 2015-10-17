@@ -8,6 +8,7 @@ package cc
 
 import (
 	"fmt"
+	. "github.com/abduld/castdiff/cc/ast"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -16,13 +17,19 @@ import (
 	"strings"
 )
 
+type Scope struct {
+	Decl map[string]*DeclStmt
+	Tag  map[string]*Type
+	Next *Scope
+}
+
 type lexer struct {
 	// input
 	start int
 	byte  int
 	lexInput
 	pushed   []lexInput
-	forcePos Pos
+	forcePos Position
 	comments []Comment
 
 	// comment assignment
@@ -43,6 +50,105 @@ type lexer struct {
 type Header struct {
 	decls []*DeclStmt
 	types []*Type
+}
+
+func (lx *lexer) pushDecl(decl *DeclStmt) {
+	sc := lx.scope
+	if sc == nil {
+		panic("no scope")
+	}
+	if decl.Name == nil {
+		return
+	}
+	if sc.Decl == nil {
+		sc.Decl = make(map[string]*DeclStmt)
+	}
+	sc.Decl[decl.Name.Value] = decl
+	if hdr := lx.declSave; hdr != nil && sc.Next == nil {
+		hdr.decls = append(hdr.decls, decl)
+	}
+}
+
+func (lx *lexer) lookupDecl(sym *SymbolLiteral) *DeclStmt {
+	if sym == nil {
+		return nil
+	}
+	name := sym.Value
+	for sc := lx.scope; sc != nil; sc = sc.Next {
+		decl := sc.Decl[name]
+		if decl != nil {
+			return decl
+		}
+	}
+	return nil
+}
+
+func (lx *lexer) pushType(typ *Type) *Type {
+	sc := lx.scope
+	if sc == nil {
+		panic("no scope")
+	}
+
+	if typ.Type == Enum && typ.Stmts != nil {
+		for _, decl := range typ.Stmts {
+
+			switch decl := decl.(type) {
+			default:
+				break;
+			case *DeclStmt:
+				lx.pushDecl(decl)
+			}
+		}
+	}
+
+	if typ.Tag.String() == "" {
+		return typ
+	}
+
+	old := lx.lookupTag(typ.Tag.String())
+	if old == nil {
+		if sc.Tag == nil {
+			sc.Tag = make(map[string]*Type)
+		}
+		sc.Tag[typ.Tag.String()] = typ
+		if hdr := lx.declSave; hdr != nil && sc.Next == nil {
+			hdr.types = append(hdr.types, typ)
+		}
+		return typ
+	}
+
+	// merge typ into old
+	if old.Kind != typ.Kind {
+		lx.Errorf("conflicting tags: %s %s and %s %s", old.Kind, old.Tag, typ.Kind, typ.Tag)
+		return typ
+	}
+	if typ.Stmts != nil {
+		if old.Stmts != nil {
+			lx.Errorf("multiple definitions for %s %s", old.Kind, old.Tag)
+		}
+		old.SyntaxInfo = typ.SyntaxInfo
+		old.Stmts = typ.Stmts
+	}
+	return old
+}
+
+func (lx *lexer) lookupTag(name string) *Type {
+	for sc := lx.scope; sc != nil; sc = sc.Next {
+		typ := sc.Tag[name]
+		if typ != nil {
+			return typ
+		}
+	}
+	return nil
+}
+
+func (lx *lexer) pushScope() {
+	sc := &Scope{Next: lx.scope}
+	lx.scope = sc
+}
+
+func (lx *lexer) popScope() {
+	lx.scope = lx.scope.Next
 }
 
 func (lx *lexer) parse() {
@@ -193,11 +299,15 @@ func (lx *lexer) pop() bool {
 	return true
 }
 
-func (lx *lexer) pos() Pos {
+func (lx *lexer) pos() Position {
 	if lx.forcePos.Line != 0 {
 		return lx.forcePos
 	}
-	return Pos{lx.file, lx.lineno, lx.byte}
+	return Position{
+		File: lx.file,
+		Line: lx.lineno,
+		Byte: lx.byte,
+	}
 }
 func (lx *lexer) span() Span {
 	p := lx.pos()
@@ -460,10 +570,10 @@ Restart:
 		yy.decl = lx.lookupDecl(&SymbolLiteral{Value: lx.tok})
 		if yy.decl != nil && yy.decl.Storage&Typedef != 0 {
 			t := yy.decl.Type
-			for t.Kind == TypedefType && t.Base != nil {
+			for t.Type == TypedefType && t.Base != nil {
 				t = t.Base
 			}
-			yy.typ = &Type{Kind: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, TypeDecl: yy.decl}
+			yy.typ = &Type{Type: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, Stmts: []Stmt{yy.decl}}
 			return tokTypeName
 		}
 		if lx.tok == "EXTERN" {
@@ -482,14 +592,6 @@ func (lx *lexer) Error(s string) {
 
 func (lx *lexer) Errorf(format string, args ...interface{}) {
 	lx.errors = append(lx.errors, fmt.Sprintf("%s: %s", lx.span(), fmt.Sprintf(format, args...)))
-}
-
-func (l Span) String() string {
-	return fmt.Sprintf("%s:%d", l.Start.File, l.Start.Line)
-}
-
-func (c Comment) GetSpan() Span {
-	return c.Span
 }
 
 var tokEq = [256]int32{
@@ -610,19 +712,6 @@ func (lx *lexer) enum(x Syntax) {
 		//ok
 	case *LanguageKeyword:
 		//ok
-	case *Expr:
-		if x == nil {
-			return
-		}
-		lx.enum(x.Text)
-		lx.enum(x.Left)
-		lx.enum(x.Right)
-		for _, y := range x.Texts {
-			lx.enum(y)
-		}
-		for _, y := range x.List {
-			lx.enum(y)
-		}
 	case *Init:
 		if x == nil {
 			return
@@ -641,26 +730,10 @@ func (lx *lexer) enum(x Syntax) {
 		for _, y := range x.Decls {
 			lx.enum(y)
 		}
-	case *Stmt:
-		if x == nil {
-			return
-		}
-		for _, y := range x.Labels {
-			lx.enum(y)
-		}
-		lx.enum(x.Pre)
-		lx.enum(x.Expr)
-		lx.enum(x.Post)
-		lx.enum(x.Body)
-		lx.enum(x.Else)
-		lx.enum(x.Text)
-		for _, y := range x.Block {
-			lx.enum(y)
-		}
 	case *Label:
 		lx.enum(x.Name)
 		// ok
-	case *Decl:
+	case *DeclStmt:
 		if x == nil {
 			return
 		}
@@ -671,7 +744,6 @@ func (lx *lexer) enum(x Syntax) {
 		lx.enum(x.Type)
 		lx.enum(x.Name)
 		lx.enum(x.Init)
-		lx.enum(x.Body)
 	case *Type:
 		if x == nil {
 			return
@@ -679,7 +751,7 @@ func (lx *lexer) enum(x Syntax) {
 		lx.enum(x.Base)
 		lx.enum(x.Tag)
 		lx.enum(x.Name)
-		for _, y := range x.Decls {
+		for _, y := range x.Stmts {
 			lx.enum(y)
 		}
 		return // do not record type itself, just inner decls

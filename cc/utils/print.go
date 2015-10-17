@@ -22,10 +22,10 @@ const (
 )
 
 type Printer struct {
-	buf    bytes.Buffer
-	indent int
-	html   bool
-	//	suffix       []Comment // suffix comments to print at next newline
+	buf          bytes.Buffer
+	indent       int
+	html         bool
+	suffix       []Comment // suffix comments to print at next newline
 	hideComments bool
 }
 
@@ -120,7 +120,7 @@ func (p *Printer) Print(args ...interface{}) {
 			p.printStmt(arg)
 		case *Type:
 			p.printType(arg, "")
-		case *Decl:
+		case *DeclStmt:
 			p.printDecl(arg)
 		case TypedName:
 			p.printType(arg.Type, arg.Name)
@@ -143,7 +143,7 @@ func (p *Printer) Print(args ...interface{}) {
 				}
 			}
 		case nestBlock:
-			if arg.stmt.Op == Block {
+			if arg.stmt.IsBlock() {
 				p.Print(" ", arg.stmt)
 			} else {
 				p.Print(indent, newline, arg.stmt, unindent)
@@ -630,36 +630,6 @@ func (p *Printer) printType(x *Type, name string) {
 	}
 }
 
-func (p *Printer) printDecl(x *Decl) {
-	p.Print(x.Comments.Before)
-	defer p.Print(x.Comments.Suffix, x.Comments.After)
-
-	if x.Storage != 0 {
-		p.Print(x.Storage, " ")
-	}
-	if x.Type == nil {
-		p.Print(x.Name)
-	} else {
-		name := x.Name.String()
-		if x.Type.Kind == Func && x.Body != nil {
-			name = "\n" + name
-		}
-		p.Print(TypedName{x.Type, name})
-		if x.Name.String() == "" {
-			switch x.Type.Kind {
-			case Struct, Union, Enum:
-				p.Print(" {", indent)
-				for _, decl := range x.Type.Decls {
-					p.Print(newline, decl)
-				}
-				p.Print(unindent, newline, "}")
-			}
-		}
-	}
-	if x.Init != nil {
-		p.Print(" = ", x.Init)
-	}
-	if x.Body != nil {
-		p.Print(newline, x.Body)
-	}
+func (p *Printer) printDecl(x *DeclStmt) {
+	p.Print(newline, x.String())
 }

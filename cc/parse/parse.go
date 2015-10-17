@@ -106,31 +106,6 @@ func ParseExpr(str string) (*Expr, error) {
 	return lx.expr, nil
 }
 
-type Prog struct {
-	SyntaxInfo
-	Id    int
-	Decls []*Decl
-}
-
-func (x *Prog) GetId() int {
-	return x.Id
-}
-
-func (x *Prog) String() string {
-	var p Printer
-	p.hideComments = true
-	p.printProg(x)
-	return p.String()
-}
-
-func (x *Prog) GetChildren() []Syntax {
-	lst := []Syntax{}
-	for _, elem := range x.Decls {
-		lst = append(lst, elem)
-	}
-	return lst
-}
-
 // removeDuplicates drops the duplicated declarations
 // caused by forward decls from prog.
 // It keeps the _last_ of each given declaration,
@@ -140,16 +115,17 @@ func (x *Prog) GetChildren() []Syntax {
 // It would be defeated by someone writing a "forward"
 // declaration following the real definition.
 func removeDuplicates(prog *Prog) {
-	count := map[*Decl]int{}
+	count := map[int]int{}
 	for _, d := range prog.Decls {
-		count[d]++
+		count[d.GetId()]++
 	}
-	var out []*Decl
+	var out []Stmt
 	for _, d := range prog.Decls {
-		count[d]--
-		if count[d] == 0 {
+		count[d.GetId()]--
+		if count[d.GetId()] == 0 {
 			out = append(out, d)
 		}
 	}
 	prog.Decls = out
 }
+

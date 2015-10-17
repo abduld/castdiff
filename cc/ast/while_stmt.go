@@ -15,7 +15,7 @@ func (x *WhileStmt) GetId() int {
 }
 
 func (x *WhileStmt) String() string {
-	return "while ( " + x.Cond.String() +") {\n\t" + x.Body.String() + "\n}"
+	return "while ( " + x.Cond.String() + ") {\n\t" + x.Body.String() + "\n}"
 }
 
 func (x *WhileStmt) GetChildren() []Syntax {
@@ -31,4 +31,12 @@ func (x *WhileStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *WhileStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+
+func (x *WhileStmt) IsBlock() bool {
+	return true
+}
+
+func (x *WhileStmt) IsStmt() bool {
+	return true
 }

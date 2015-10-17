@@ -73,7 +73,7 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 
 	case *Type:
 		walk(x.Base, before, after, seen)
-		for _, d := range x.Decls {
+		for _, d := range x.Stmts {
 			walk(d, before, after, seen)
 		}
 		//walk(x.Width, before, after, seen)

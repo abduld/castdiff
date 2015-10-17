@@ -6,7 +6,7 @@ type LabeledStmt struct {
 	SyntaxInfo
 	Kind  string `json:"kind"`
 	Id    int    `json:"id"`
-	Label Label  `json:"label"`
+	Labels []*Label  `json:"labels"`
 	Expr  Expr   `json:"expr"`
 }
 
@@ -15,11 +15,20 @@ func (x *LabeledStmt) GetId() int {
 }
 
 func (x *LabeledStmt) String() string {
-	return x.Label.String() + ": " + x.Expr.String()
+	str := ""
+	for _, lbl := range x.Labels {
+		str += lbl.String() + "\n"
+	}
+	return str + x.Expr.String()
 }
 
 func (x *LabeledStmt) GetChildren() []Syntax {
-	return []Syntax{&x.Label, x.Expr}
+	children := make([]Syntax, len(x.Labels) + 1)
+	for ii, lbl := range x.Labels {
+		children[ii] = lbl
+	}
+	children[len(x.Labels)] = x.Expr
+	return children
 }
 
 func (x *LabeledStmt) MarshalJSON() ([]byte, error) {
@@ -31,4 +40,8 @@ func (x *LabeledStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *LabeledStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+
+func (x *LabeledStmt) IsStmt() bool {
+	return true
 }

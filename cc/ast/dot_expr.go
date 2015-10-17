@@ -2,10 +2,17 @@ package ast
 
 import "encoding/json"
 
+type DotOp int
+
+const (
+	_   DotOp = iota + 0x500
+	Dot       // Left.Name
+)
+
 type DotExpr struct {
 	SyntaxInfo
-	Kind string `json:"kind"`
-	Id   int    `json:"id"`
+	Kind   string `json:"kind"`
+	Id     int    `json:"id"`
 	Struct Expr   `json:"struct"`
 	Member Expr   `json:"member"`
 }

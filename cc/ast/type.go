@@ -4,17 +4,22 @@
 
 package ast
 
-import "strconv"
+import (
+	"encoding/json"
+	"strconv"
+)
 
 type Type struct {
 	SyntaxInfo
-	Id    int          `json:"id"`
-	Kind  TypeKind     `json:"kind"`
-	Qual  TypeQual     `json:"qual"`
-	Base  *Type        `json:"base"`
-	Tag   Syntax       `json:"tag"`
-	Decls []*DeclStmt  `json:"decls"`
-	Name  Syntax       `json:"name"`
+	Id    int         `json:"id"`
+	Kind string `json:"kind"`
+	Type  TypeType    `json:"type"`
+	Qual  TypeQual    `json:"qual"`
+	Base  *Type       `json:"base"`
+	Size Expr `json:"size"`
+	Tag   Syntax      `json:"tag"`
+	Stmts []Stmt `json:"stmts"`
+	Name  Syntax      `json:"name"`
 }
 
 func (x *Type) GetId() int {
@@ -32,7 +37,10 @@ func (x *Type) GetChildren() []Syntax {
 	if x.Name != nil {
 		lst = append(lst, x.Name)
 	}
-	for _, elem := range x.Decls {
+	if x.Size != nil {
+		lst = append(lst, x.Size)
+	}
+	for _, elem := range x.Stmts {
 		lst = append(lst, elem)
 	}
 	return lst
@@ -50,9 +58,9 @@ func (t *Type) String() string {
 	if t == nil {
 		return "<nil>"
 	}
-	switch t.Kind {
+	switch t.Type {
 	default:
-		return t.Kind.String() + "<" + strconv.Itoa(t.Id) + ">"
+		return t.Type.String() + "<" + strconv.Itoa(t.Id) + ">"
 	case TypedefType:
 		if t.Name.String() == "" {
 			return "missing_typedef_name"
@@ -62,18 +70,27 @@ func (t *Type) String() string {
 		return t.Base.String() + "*"
 	case Struct, Union, Enum:
 		if t.Tag.String() == "" {
-			return t.Kind.String()
+			return t.Type.String()
 		}
-		return t.Kind.String() + " " + t.Tag.String()
+		return t.Type.String() + " " + t.Tag.String()
 	case Array:
+		if (t.Size != nil) {
+			return t.Base.String() + "[" + t.Size.String() + "]"
+		}
 		return t.Base.String() + "[]"
 	case Func:
 		s := "func("
-		for i, d := range t.Decls {
+		for i, d := range t.Stmts {
 			if i > 0 {
 				s += ", "
 			}
-			s += d.Name.String() + " " + d.Type.String()
+
+			switch d := d.(type) {
+			default:
+				continue;
+			case *DeclStmt:
+				s += d.Name.String() + " " + d.Type.String()
+			}
 		}
 		if t.Base == t {
 			s += ") SELF"
@@ -82,4 +99,15 @@ func (t *Type) String() string {
 		}
 		return s
 	}
+}
+
+func (x *Type) MarshalJSON() ([]byte, error) {
+	if x != nil {
+		x.Kind = "Type"
+	}
+	return json.Marshal(*x)
+
+}
+func (x *Type) UnmarshalJSON(data []byte) error {
+	return json.Unmarshal(data, x)
 }

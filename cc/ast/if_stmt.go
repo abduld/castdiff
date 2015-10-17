@@ -16,11 +16,19 @@ func (x *IfStmt) GetId() int {
 }
 
 func (x *IfStmt) String() string {
-	return "if (" + x.Cond.String() + ") \n\t" + x.Then.String() + "\n else \n\t" + x.Else.String()
+	if x.Else == nil {
+		return "if (" + x.Cond.String() + ") \n\t" + x.Then.String()
+	} else {
+		return "if (" + x.Cond.String() + ") \n\t" + x.Then.String() + "\n else \n\t" + x.Else.String()
+	}
 }
 
 func (x *IfStmt) GetChildren() []Syntax {
-	return []Syntax{x.Cond, x.Then, x.Else}
+	if x.Else == nil {
+		return []Syntax{x.Cond, x.Then}
+	} else {
+		return []Syntax{x.Cond, x.Then, x.Else}
+	}
 }
 
 func (x *IfStmt) MarshalJSON() ([]byte, error) {
@@ -32,4 +40,12 @@ func (x *IfStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *IfStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+
+func (x *IfStmt) IsBlock() bool {
+	return true
+}
+
+func (x *IfStmt) IsStmt() bool {
+	return true
 }

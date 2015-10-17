@@ -17,10 +17,10 @@ func (x *ForStmt) GetId() int {
 }
 
 func (x *ForStmt) String() string {
-	return "for ( " + x.Init.String()   + "; " + 
-                          x.Cond.String()   + "; " +
-                          x.Update.String() + "; " + " ) {\n" +
-                          x.Body.String() + "}"
+	return "for ( " + x.Init.String() + "; " +
+		x.Cond.String() + "; " +
+		x.Update.String() + "; " + " ) {\n" +
+		x.Body.String() + "}"
 }
 
 func (x *ForStmt) GetChildren() []Syntax {
@@ -36,4 +36,8 @@ func (x *ForStmt) MarshalJSON() ([]byte, error) {
 }
 func (x *ForStmt) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
+}
+
+func (x *ForStmt) IsStmt() bool {
+	return true
 }

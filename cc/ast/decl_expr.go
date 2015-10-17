@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-type DeclStmt struct {
+type DeclExpr struct {
 	SyntaxInfo
 	Kind string `json:"kind"`
 	Id      int            `json:"id"`
@@ -15,11 +15,11 @@ type DeclStmt struct {
 	Init    Expr           `json:"init"`
 }
 
-func (x *DeclStmt) GetId() int {
+func (x *DeclExpr) GetId() int {
 	return x.Id
 }
 
-func (x *DeclStmt) GetChildren() []Syntax {
+func (x *DeclExpr) GetChildren() []Syntax {
 	lst := []Syntax{}
 	if x.Type != nil {
 		lst = append(lst, x.Type)
@@ -33,27 +33,24 @@ func (x *DeclStmt) GetChildren() []Syntax {
 	return lst
 }
 
-func (d *DeclStmt) String() string {
+func (d *DeclExpr) String() string {
 	if d == nil {
-		return "nil DeclStmt"
+		return "nil DeclExpr"
 	}
 	if d.Init != nil {
-		return fmt.Sprintf("DeclStmt<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
+		return fmt.Sprintf("DeclExpr<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
 	} else {
-		return fmt.Sprintf("DeclStmt<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
+		return fmt.Sprintf("DeclExpr<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
 	}
 }
-func (d *DeclStmt) IsStmt() bool {
-	return true
-}
 
-func (x *DeclStmt) MarshalJSON() ([]byte, error) {
+func (x *DeclExpr) MarshalJSON() ([]byte, error) {
 	if x != nil {
-		x.Kind = "DeclStmt"
+		x.Kind = "DeclExpr"
 	}
 	return json.Marshal(*x)
 
 }
-func (x *DeclStmt) UnmarshalJSON(data []byte) error {
+func (x *DeclExpr) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, x)
 }

@@ -2,6 +2,13 @@ package ast
 
 import "encoding/json"
 
+type CondOp int
+
+const (
+	_    CondOp = iota + 0x400
+	Cond        // x ? y : z; List = {x, y, z}
+)
+
 type CondExpr struct {
 	SyntaxInfo
 	Kind string `json:"kind"`

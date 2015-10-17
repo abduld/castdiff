@@ -2,10 +2,10 @@ package ast
 
 import "fmt"
 
-type TypeKind int
+type TypeType int
 
 const (
-	_ TypeKind = iota
+	_ TypeType = iota
 	Void
 	Char
 	Uchar
@@ -28,7 +28,7 @@ const (
 	TypedefType
 )
 
-var typeKindString = []string{
+var TypeTypeString = []string{
 	Void:        "void",
 	Char:        "char",
 	Uchar:       "uchar",
@@ -51,9 +51,9 @@ var typeKindString = []string{
 	TypedefType: "<typedef>",
 }
 
-func (k TypeKind) String() string {
-	if 0 <= int(k) && int(k) <= len(typeKindString) && typeKindString[k] != "" {
-		return typeKindString[k]
+func (k TypeType) String() string {
+	if 0 <= int(k) && int(k) <= len(TypeTypeString) && TypeTypeString[k] != "" {
+		return TypeTypeString[k]
 	}
-	return fmt.Sprintf("TypeKind(%d)", k)
+	return fmt.Sprintf("TypeType(%d)", k)
 }
