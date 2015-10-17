@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+//go:generate go tool yacc cc.y
+
 package cc
 
 import (
@@ -9,6 +11,8 @@ import (
 	"io"
 	"io/ioutil"
 	"strings"
+
+	. "github.com/abduld/castdiff/cc/ast"
 )
 
 func Read(name string, r io.Reader) (*Prog, error) {

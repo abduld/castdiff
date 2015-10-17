@@ -16,56 +16,6 @@ import (
 	"strings"
 )
 
-// A Syntax represents any syntax element.
-type Syntax interface {
-	// GetSpan returns the start and end position of the syntax,
-	// excluding leading or trailing comments.
-	// The use of a Get prefix is non-standard but avoids a conflict
-	// with the field named Span in most implementations.
-	GetSpan() Span
-
-	// GetComments returns the comments attached to the syntax.
-	// This method would normally be named 'Comments' but that
-	// would interfere with embedding a type of the same name.
-	// The use of a Get prefix is non-standard but avoids a conflict
-	// with the field named Comments in most implementations.
-	GetComments() *Comments
-
-	GetId() int
-
-	GetChildren() []Syntax
-
-	String() string
-}
-
-// SyntaxInfo contains metadata about a piece of syntax.
-type SyntaxInfo struct {
-	Span     Span // location of syntax in input
-	Comments Comments
-}
-
-func (s *SyntaxInfo) GetSpan() Span {
-	return s.Span
-}
-
-func (s *SyntaxInfo) String() string {
-	return ""
-}
-
-func (s *SyntaxInfo) GetComments() *Comments {
-	return &s.Comments
-}
-
-// Comments collects the comments associated with a syntax element.
-type Comments struct {
-	Before []Comment // whole-line comments before this syntax
-	Suffix []Comment // end-of-line comments after this syntax
-
-	// For top-level syntax elements only, After lists whole-line
-	// comments following the syntax.
-	After []Comment
-}
-
 type lexer struct {
 	// input
 	start int
@@ -91,7 +41,7 @@ type lexer struct {
 }
 
 type Header struct {
-	decls []*Decl
+	decls []*DeclStmt
 	types []*Type
 }
 
@@ -534,25 +484,8 @@ func (lx *lexer) Errorf(format string, args ...interface{}) {
 	lx.errors = append(lx.errors, fmt.Sprintf("%s: %s", lx.span(), fmt.Sprintf(format, args...)))
 }
 
-type Pos struct {
-	File string
-	Line int
-	Byte int
-}
-
-type Span struct {
-	Start Pos
-	End   Pos
-}
-
 func (l Span) String() string {
 	return fmt.Sprintf("%s:%d", l.Start.File, l.Start.Line)
-}
-
-type Comment struct {
-	Span
-	Text   string
-	Suffix bool
 }
 
 func (c Comment) GetSpan() Span {
