@@ -21,6 +21,8 @@ func Read(name string, r io.Reader) (*Prog, error) {
 
 func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 	lx := &lexer{}
+	yyDebug        = 1
+	yyErrorVerbose = true
 	var prog *Prog
 	for i, name := range names {
 		if lx.includeSeen[name] != nil {
@@ -51,8 +53,18 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 		lx.prog = nil
 		for sc := lx.scope; sc != nil; sc = sc.Next {
 			for name, decl := range sc.Decl {
-				if decl.Storage&Static != 0 || (decl.Storage&Typedef != 0 && strings.HasSuffix(decl.Span.Start.File, ".c")) {
-					delete(sc.Decl, name)
+				switch decl := decl.(type) {
+				default:
+					break ;
+				case *DeclStmt:
+					if decl.Storage&Static != 0 || (decl.Storage&Typedef != 0 && strings.HasSuffix(decl.Span.Start.File, ".c")) {
+						delete(sc.Decl, name)
+					}
+				case *FuncStmt:
+					if decl.Storage&Static != 0 || (decl.Storage&Typedef != 0 && strings.HasSuffix(decl.Span.Start.File, ".c")) {
+						delete(sc.Decl, name)
+					}
+
 				}
 			}
 			for name, typ := range sc.Tag {
@@ -63,7 +75,6 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 		}
 	}
 	lx.prog = prog
-	lx.assignComments()
 	if lx.errors != nil {
 		return nil, fmt.Errorf("%v", strings.Join(lx.errors, "\n"))
 	}

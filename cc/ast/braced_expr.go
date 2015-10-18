@@ -14,7 +14,10 @@ func (x *BracedExpr) GetId() int {
 }
 
 func (x *BracedExpr) String() string {
-	return "{ " + x.Expr.String() + " }"
+	if x.Expr != nil {
+		return "{ " + x.Expr.String() + " }"
+	}
+	return "{ }"
 }
 
 func (x *BracedExpr) GetChildren() []Syntax {

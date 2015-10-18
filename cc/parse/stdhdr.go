@@ -33,11 +33,11 @@ typedef uvlong u64int;
 void *nil;
 
 typedef struct va_list *va_list;
+
+
 `
 
 var hdr_libc_h = `
-#include <fmt.h>
-
 int nelem(void*);
 
 int memcmp(void*, void*, long);
@@ -145,6 +145,97 @@ extern	int	noted(int);
 `
 
 var hdr_wb_h = `
+#include <u.h>
+#include <libc.h>
+#include <math.h>
 typedef int *wbArg_t;
 typedef int(*dim3)(int, int, int);
+`
+
+var hdr_math_h = `
+double      acos(double);
+float       acosf(float);
+double      acosh(double);
+float       acoshf(float);
+long double acoshl(long double);
+long double acosl(long double);
+double      asin(double);
+float       asinf(float);
+double      asinh(double);
+float       asinhf(float);
+long double asinhl(long double);
+long double asinl(long double);
+double      atan(double);
+double      atan2(double, double);
+float       atan2f(float, float);
+long double atan2l(long double, long double);
+float       atanf(float);
+double      atanh(double);
+float       atanhf(float);
+long double atanhl(long double);
+long double atanl(long double);
+double      cbrt(double);
+float       cbrtf(float);
+long double cbrtl(long double);
+double      ceil(double);
+float       ceilf(float);
+long double ceill(long double);
+double      copysign(double, double);
+float       copysignf(float, float);
+long double copysignl(long double, long double);
+double      cos(double);
+float       cosf(float);
+double      cosh(double);
+float       coshf(float);
+long double coshl(long double);
+long double cosl(long double);
+double      erf(double);
+double      erfc(double);
+float       erfcf(float);
+long double erfcl(long double);
+float       erff(float);
+long double erfl(long double);
+double      exp(double);
+double      exp2(double);
+float       exp2f(float);
+long double exp2l(long double);
+float       expf(float);
+long double expl(long double);
+double      expm1(double);
+float       expm1f(float);
+long double expm1l(long double);
+double      fabs(double);
+float       fabsf(float);
+long double fabsl(long double);
+double      fdim(double, double);
+float       fdimf(float, float);
+long double fdiml(long double, long double);
+double      floor(double);
+float       floorf(float);
+long double floorl(long double);
+double      fma(double, double, double);
+float       fmaf(float, float, float);
+long double fmal(long double, long double, long double);
+double      fmax(double, double);
+float       fmaxf(float, float);
+long double fmaxl(long double, long double);
+double      fmin(double, double);
+float       fminf(float, float);
+long double fminl(long double, long double);
+double      fmod(double, double);
+float       fmodf(float, float);
+long double fmodl(long double, long double);
+double      frexp(double, int *);
+float       frexpf(float value, int *);
+long double frexpl(long double value, int *);
+double      hypot(double, double);
+float       hypotf(float, float);
+long double hypotl(long double, long double);
+int         ilogb(double);
+int         ilogbf(float);
+int         ilogbl(long double);
+double      j0(double);
+double      j1(double);
+double      jn(int, double);
+
 `

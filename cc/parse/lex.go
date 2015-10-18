@@ -18,7 +18,7 @@ import (
 )
 
 type Scope struct {
-	Decl map[string]*DeclStmt
+	Decl map[string]Stmt
 	Tag  map[string]*Type
 	Next *Scope
 }
@@ -48,12 +48,13 @@ type lexer struct {
 }
 
 type Header struct {
-	decls []*DeclStmt
+	decls []Stmt
 	types []*Type
 }
 
-func (lx *lexer) pushDecl(decl *DeclStmt) {
+func pushDeclStmt(lx *lexer, decl * DeclStmt) {
 	sc := lx.scope
+
 	if sc == nil {
 		panic("no scope")
 	}
@@ -61,7 +62,7 @@ func (lx *lexer) pushDecl(decl *DeclStmt) {
 		return
 	}
 	if sc.Decl == nil {
-		sc.Decl = make(map[string]*DeclStmt)
+		sc.Decl = make(map[string]Stmt)
 	}
 	sc.Decl[decl.Name.Value] = decl
 	if hdr := lx.declSave; hdr != nil && sc.Next == nil {
@@ -69,7 +70,35 @@ func (lx *lexer) pushDecl(decl *DeclStmt) {
 	}
 }
 
-func (lx *lexer) lookupDecl(sym *SymbolLiteral) *DeclStmt {
+func pushFuncStmt(lx *lexer, decl * FuncStmt) {
+	sc := lx.scope
+
+	if sc == nil {
+		panic("no scope")
+	}
+	if decl.Name == nil {
+		return
+	}
+	if sc.Decl == nil {
+		sc.Decl = make(map[string]Stmt)
+	}
+	sc.Decl[decl.Name.Value] = decl
+	if hdr := lx.declSave; hdr != nil && sc.Next == nil {
+		hdr.decls = append(hdr.decls, decl)
+	}
+}
+func (lx *lexer) pushDecl(decl Stmt) {
+	switch decl := decl.(type) {
+	default:
+		panic("undefined decl")
+	case *DeclStmt:
+		pushDeclStmt(lx, decl)
+	case *FuncStmt:
+		pushFuncStmt(lx, decl)
+	}
+}
+
+func (lx *lexer) lookupDecl(sym *SymbolLiteral) Stmt {
 	if sym == nil {
 		return nil
 	}
@@ -96,6 +125,8 @@ func (lx *lexer) pushType(typ *Type) *Type {
 			default:
 				break;
 			case *DeclStmt:
+				lx.pushDecl(decl)
+			case *FuncStmt:
 				lx.pushDecl(decl)
 			}
 		}
@@ -248,6 +279,7 @@ var stdMap = map[string]string{
 	"u.h":      hdr_u_h,
 	"libc.h":   hdr_libc_h,
 	"wb.h":     hdr_wb_h,
+	"math.h": 	hdr_math_h,
 	"stdarg.h": "",
 	"signal.h": "",
 }
@@ -261,7 +293,7 @@ func AddInclude(dir string) {
 }
 
 func (lx *lexer) findInclude(name string, std bool) (string, []byte, error) {
-	if std {
+	if std || name == "wb.h" || name == "wb" {
 		if redir, ok := stdMap[name]; ok {
 			if redir == "" {
 				return "", nil, nil
@@ -568,13 +600,29 @@ Restart:
 			return int(t)
 		}
 		yy.decl = lx.lookupDecl(&SymbolLiteral{Value: lx.tok})
-		if yy.decl != nil && yy.decl.Storage&Typedef != 0 {
-			t := yy.decl.Type
-			for t.Type == TypedefType && t.Base != nil {
-				t = t.Base
+		if yy.decl != nil {
+			switch decl := yy.decl.(type) {
+			default:
+				break;
+			case *DeclStmt:
+				if decl.Storage & Typedef != 0 {
+					t := decl.Type
+					for t.Type == TypedefType && t.Base != nil {
+						t = t.Base
+					}
+					yy.typ = &Type{Type: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, Stmts: []Stmt{yy.decl}}
+					return tokTypeName
+				}
+			case *FuncStmt:
+				if decl.Storage & Typedef != 0 {
+					t := decl.ReturnType
+					for t.Type == TypedefType && t.Base != nil {
+						t = t.Base
+					}
+					yy.typ = &Type{Type: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, Stmts: []Stmt{yy.decl}}
+					return tokTypeName
+				}
 			}
-			yy.typ = &Type{Type: TypedefType, Name: &SymbolLiteral{Value: yy.str}, Base: t, Stmts: []Stmt{yy.decl}}
-			return tokTypeName
 		}
 		if lx.tok == "EXTERN" {
 			goto Restart
@@ -695,7 +743,6 @@ func (lx *lexer) enum(x Syntax) {
 		panic(fmt.Errorf("order: unexpected type %T", x))
 	case nil:
 		return
-
 	case *EmptyLiteral:
 		//ok
 	case *BooleanLiteral:
@@ -712,6 +759,100 @@ func (lx *lexer) enum(x Syntax) {
 		//ok
 	case *LanguageKeyword:
 		//ok
+	case *DotExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Struct)
+		lx.enum(x.Member)
+	case *LabeledStmt:
+		if x == nil {
+			return
+		}
+		for _, lbl := range x.Labels {
+			lx.enum(lbl)
+		}
+		lx.enum(x.Expr)
+	case *AssignExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Left)
+		lx.enum(x.Right)
+	case *CallExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Callee)
+		for _, arg := range x.Args {
+		lx.enum(arg)
+	}
+	case *TupleExpr:
+		if x == nil {
+			return
+		}
+		for _, arg := range x.Args {
+			lx.enum(arg)
+		}
+	case *CastExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Expr)
+	case *ReturnStmt:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Value)
+	case *CUDALaunchExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Callee)
+		for _, arg := range x.LaunchParams {
+			lx.enum(arg)
+		}
+		for _, arg := range x.Args {
+			lx.enum(arg)
+		}
+	case *IfStmt:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Cond)
+		lx.enum(x.Then)
+		lx.enum(x.Else)
+	case *ExprStmt:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Expr)
+	case *ArrowExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Ptr)
+		lx.enum(x.Member)
+	case *BinaryExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Left)
+		lx.enum(x.Right)
+	case *UnaryExpr:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Arg)
+	case *FuncStmt:
+		if x == nil {
+			return
+		}
+		lx.enum(x.Name)
+		for _, y := range x.Args {
+			lx.enum(y)
+		}
+		lx.enum(x.Body)
 	case *Init:
 		if x == nil {
 			return
@@ -728,6 +869,13 @@ func (lx *lexer) enum(x Syntax) {
 			return
 		}
 		for _, y := range x.Decls {
+			lx.enum(y)
+		}
+	case *BlockStmt:
+		if x == nil {
+			return
+		}
+		for _, y := range x.Stmts {
 			lx.enum(y)
 		}
 	case *Label:
@@ -773,6 +921,15 @@ type byStart []Syntax
 func (x byStart) Len() int      { return len(x) }
 func (x byStart) Swap(i, j int) { x[i], x[j] = x[j], x[i] }
 func (x byStart) Less(i, j int) bool {
+	if x[i] == nil && x[j] == nil {
+		return true
+	}
+	if x[i] == nil {
+		return false
+	}
+	if x[j] == nil {
+		return true
+	}
 	pi := x[i].GetSpan()
 	pj := x[j].GetSpan()
 	// Order by start byte, leftmost first,
@@ -796,82 +953,4 @@ func (x byEnd) Less(i, j int) bool {
 		return pi.End.Byte < pj.End.Byte
 	}
 	return pi.Start.Byte > pj.Start.Byte
-}
-
-// assignComments attaches comments to nearby syntax.
-func (lx *lexer) assignComments() {
-	// Generate preorder and postorder lists.
-	lx.order(lx.prog)
-
-	// Split into whole-line comments and suffix comments.
-	var line, suffix []Comment
-	for _, com := range lx.comments {
-		if com.Suffix {
-			suffix = append(suffix, com)
-		} else {
-			line = append(line, com)
-		}
-	}
-
-	// Assign line comments to syntax immediately following.
-	for _, x := range lx.pre {
-		start := x.GetSpan().Start
-		xcom := x.GetComments()
-		for len(line) > 0 && start.Byte >= line[0].Start.Byte {
-			xcom.Before = append(xcom.Before, line[0])
-			line = line[1:]
-		}
-	}
-
-	// Remaining line comments go at end of file.
-	lx.prog.Comments.After = append(lx.prog.Comments.After, line...)
-
-	// Assign suffix comments to syntax immediately before.
-	for i := len(lx.post) - 1; i >= 0; i-- {
-		x := lx.post[i]
-
-		// Do not assign suffix comments to call, list, end-of-list, or whole file.
-		// Instead assign them to the last argument, element, or rule.
-		/*
-			switch x.(type) {
-			case *CallExpr, *ListExpr, *End, *File:
-				continue
-			}
-		*/
-
-		// Do not assign suffix comments to something that starts
-		// on an earlier line, so that in
-		//
-		//	tags = [ "a",
-		//		"b" ], # comment
-		//
-		// we assign the comment to "b" and not to tags = [ ... ].
-		span := x.GetSpan()
-		start, end := span.Start, span.End
-		if start.Line != end.Line {
-			continue
-		}
-		xcom := x.GetComments()
-		for len(suffix) > 0 && end.Byte <= suffix[len(suffix)-1].Start.Byte {
-			xcom.Suffix = append(xcom.Suffix, suffix[len(suffix)-1])
-			suffix = suffix[:len(suffix)-1]
-		}
-	}
-
-	// We assigned suffix comments in reverse.
-	// If multiple suffix comments were appended to the same
-	// expression node, they are now in reverse. Fix that.
-	for _, x := range lx.post {
-		reverseComments(x.GetComments().Suffix)
-	}
-
-	// Remaining suffix comments go at beginning of file.
-	lx.prog.Comments.Before = append(lx.prog.Comments.Before, suffix...)
-}
-
-// reverseComments reverses the []Comment list.
-func reverseComments(list []Comment) {
-	for i, j := 0, len(list)-1; i < j; i, j = i+1, j-1 {
-		list[i], list[j] = list[j], list[i]
-	}
 }

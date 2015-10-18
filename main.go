@@ -1,22 +1,27 @@
 package main
 
 import (
+/*
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
 	"log"
 	"os"
-
+*/
 	cc "github.com/abduld/castdiff/cc"
 )
 
+/*
 var (
 	cfgFile = flag.String("c", "", "config file")
 	inc     = flag.String("I", "", "include directory")
 )
+*/
 
 func main() {
+	cc.Test()
+	/*
 	log.SetFlags(0)
 	flag.Parse()
 	flag.Usage = func() {
@@ -53,4 +58,5 @@ func main() {
 		os.Stdout.Write(b)
 	}
 	//fmt.Println(prog)
+	*/
 }

@@ -8,8 +8,9 @@ type FuncStmt struct {
 	Id         int            `json:"id"`
 	ReturnType *Type          `json:"rettype"`
 	Name       *SymbolLiteral `json:"name"`
-	Args       []DeclStmt     `json:"args"`
+	Args       []*DeclStmt     `json:"args"`
 	Body       Syntax         `json:"body"`
+	Storage Storage        `json:"storage"`
 	IsDecl     bool           `json:"decl"`
 }
 
@@ -35,7 +36,7 @@ func (x *FuncStmt) String() string {
 func (x *FuncStmt) GetChildren() []Syntax {
 	children := []Syntax{x.ReturnType, x.Name}
 	for _, arg := range x.Args {
-		children = append(children, &arg)
+		children = append(children, arg)
 	}
 	return children
 }

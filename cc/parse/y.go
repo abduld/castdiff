@@ -5,7 +5,8 @@ import __yyfmt__ "fmt"
 
 //line cc.y:34
 import (
-	// "runtime/debug"
+	//"runtime/debug"
+	_ "fmt"
 
 	. "github.com/abduld/castdiff/cc/ast"
 )
@@ -28,13 +29,13 @@ func nextId() int {
 	return id
 }
 
-//line cc.y:62
+//line cc.y:63
 type yySymType struct {
 	yys      int
 	abdecor  func(*Type) *Type
 	fundecl  *FuncStmt
-	decl     *DeclStmt
-	decls    []*DeclStmt
+	decl     Stmt
+	decls    []DeclStmt
 	decor    func(*Type) (*Type, *SymbolLiteral)
 	decors   []func(*Type) (*Type, *SymbolLiteral)
 	expr     Expr
@@ -46,8 +47,8 @@ type yySymType struct {
 	label    *Label
 	labels   []*Label
 	span     Span
-	prefix   *Prefix
-	prefixes []*Prefix
+	prefix   Expr
+	prefixes []Expr
 	stmt     Stmt
 	stmts    []Stmt
 	str      string
@@ -1031,39 +1032,39 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:223
+		//line cc.y:224
 		{
 			yylex.(*lexer).prog = &Prog{Decls: yyDollar[2].stmts, Id: nextId()}
 			return 0
 		}
 	case 2:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:228
+		//line cc.y:229
 		{
 			return 0
 		}
 	case 3:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:233
+		//line cc.y:234
 		{
 			yyVAL.span = Span{}
 			yyVAL.stmts = nil
 		}
 	case 4:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:238
+		//line cc.y:239
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[2].stmts...)
 		}
 	case 5:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:243
+		//line cc.y:244
 		{
 		}
 	case 6:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:248
+		//line cc.y:249
 		{
 			yyVAL.span = yyDollar[1].span
 			if len(yyDollar[1].exprs) == 1 {
@@ -1075,7 +1076,7 @@ yydefault:
 		}
 	case 7:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:260
+		//line cc.y:261
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = &SymbolLiteral{
@@ -1086,7 +1087,7 @@ yydefault:
 		}
 	case 8:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:269
+		//line cc.y:270
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = &IntegerLiteral{
@@ -1097,7 +1098,7 @@ yydefault:
 		}
 	case 9:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:278
+		//line cc.y:279
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = &RealLiteral{
@@ -1108,7 +1109,7 @@ yydefault:
 		}
 	case 10:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:287
+		//line cc.y:288
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = &CharLiteral{
@@ -1119,7 +1120,7 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:296
+		//line cc.y:297
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = &TupleExpr{
@@ -1131,7 +1132,7 @@ yydefault:
 		}
 	case 12:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:306
+		//line cc.y:307
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1144,7 +1145,7 @@ yydefault:
 		}
 	case 13:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:317
+		//line cc.y:318
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1157,7 +1158,7 @@ yydefault:
 		}
 	case 14:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:328
+		//line cc.y:329
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1170,7 +1171,7 @@ yydefault:
 		}
 	case 15:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:339
+		//line cc.y:340
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1183,7 +1184,7 @@ yydefault:
 		}
 	case 16:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:350
+		//line cc.y:351
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1196,7 +1197,7 @@ yydefault:
 		}
 	case 17:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:361
+		//line cc.y:362
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1209,7 +1210,7 @@ yydefault:
 		}
 	case 18:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:372
+		//line cc.y:373
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1222,7 +1223,7 @@ yydefault:
 		}
 	case 19:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:383
+		//line cc.y:384
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1235,7 +1236,7 @@ yydefault:
 		}
 	case 20:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:394
+		//line cc.y:395
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1248,7 +1249,7 @@ yydefault:
 		}
 	case 21:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:405
+		//line cc.y:406
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1261,7 +1262,7 @@ yydefault:
 		}
 	case 22:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:416
+		//line cc.y:417
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1274,7 +1275,7 @@ yydefault:
 		}
 	case 23:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:427
+		//line cc.y:428
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1287,7 +1288,7 @@ yydefault:
 		}
 	case 24:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:438
+		//line cc.y:439
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1300,7 +1301,7 @@ yydefault:
 		}
 	case 25:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:449
+		//line cc.y:450
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1313,7 +1314,7 @@ yydefault:
 		}
 	case 26:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:460
+		//line cc.y:461
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1326,7 +1327,7 @@ yydefault:
 		}
 	case 27:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:471
+		//line cc.y:472
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1339,7 +1340,7 @@ yydefault:
 		}
 	case 28:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:482
+		//line cc.y:483
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1352,7 +1353,7 @@ yydefault:
 		}
 	case 29:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:493
+		//line cc.y:494
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &BinaryExpr{
@@ -1365,7 +1366,7 @@ yydefault:
 		}
 	case 30:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:504
+		//line cc.y:505
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 
@@ -1379,7 +1380,7 @@ yydefault:
 		}
 	case 31:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:516
+		//line cc.y:517
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1392,7 +1393,7 @@ yydefault:
 		}
 	case 32:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:527
+		//line cc.y:528
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1405,7 +1406,7 @@ yydefault:
 		}
 	case 33:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:538
+		//line cc.y:539
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1418,7 +1419,7 @@ yydefault:
 		}
 	case 34:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:549
+		//line cc.y:550
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1431,7 +1432,7 @@ yydefault:
 		}
 	case 35:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:560
+		//line cc.y:561
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1444,7 +1445,7 @@ yydefault:
 		}
 	case 36:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:571
+		//line cc.y:572
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1457,7 +1458,7 @@ yydefault:
 		}
 	case 37:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:582
+		//line cc.y:583
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1470,7 +1471,7 @@ yydefault:
 		}
 	case 38:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:593
+		//line cc.y:594
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1483,7 +1484,7 @@ yydefault:
 		}
 	case 39:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:604
+		//line cc.y:605
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1496,7 +1497,7 @@ yydefault:
 		}
 	case 40:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:615
+		//line cc.y:616
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1509,7 +1510,7 @@ yydefault:
 		}
 	case 41:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:626
+		//line cc.y:627
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &AssignExpr{
@@ -1522,7 +1523,7 @@ yydefault:
 		}
 	case 42:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:637
+		//line cc.y:638
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1534,7 +1535,7 @@ yydefault:
 		}
 	case 43:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:647
+		//line cc.y:648
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1546,7 +1547,7 @@ yydefault:
 		}
 	case 44:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:657
+		//line cc.y:658
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1558,7 +1559,7 @@ yydefault:
 		}
 	case 45:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:667
+		//line cc.y:668
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1570,7 +1571,7 @@ yydefault:
 		}
 	case 46:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:677
+		//line cc.y:678
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1582,7 +1583,7 @@ yydefault:
 		}
 	case 47:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:687
+		//line cc.y:688
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1594,7 +1595,7 @@ yydefault:
 		}
 	case 48:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:697
+		//line cc.y:698
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1606,7 +1607,7 @@ yydefault:
 		}
 	case 49:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:707
+		//line cc.y:708
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1618,7 +1619,7 @@ yydefault:
 		}
 	case 50:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:717
+		//line cc.y:718
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &CallExpr{
@@ -1634,7 +1635,7 @@ yydefault:
 		}
 	case 51:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:731
+		//line cc.y:732
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.expr = &CallExpr{
@@ -1650,7 +1651,7 @@ yydefault:
 		}
 	case 52:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line cc.y:745
+		//line cc.y:746
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[6].span)
 			yyVAL.expr = &CallExpr{
@@ -1666,7 +1667,7 @@ yydefault:
 		}
 	case 53:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:759
+		//line cc.y:760
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.expr = &CastExpr{
@@ -1678,7 +1679,7 @@ yydefault:
 		}
 	case 54:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:769
+		//line cc.y:770
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.expr = &CastExpr{
@@ -1695,7 +1696,7 @@ yydefault:
 		}
 	case 55:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:784
+		//line cc.y:785
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.expr = &ParenExpr{
@@ -1706,7 +1707,7 @@ yydefault:
 		}
 	case 56:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line cc.y:793
+		//line cc.y:794
 		{
 
 			yyVAL.span = span(yyDollar[1].span, yyDollar[7].span)
@@ -1720,7 +1721,7 @@ yydefault:
 		}
 	case 57:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:805
+		//line cc.y:806
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.expr = &CallExpr{
@@ -1732,7 +1733,7 @@ yydefault:
 		}
 	case 58:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:815
+		//line cc.y:816
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.expr = &CallExpr{
@@ -1748,7 +1749,7 @@ yydefault:
 		}
 	case 59:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:829
+		//line cc.y:830
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1760,7 +1761,7 @@ yydefault:
 		}
 	case 60:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:839
+		//line cc.y:840
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = &UnaryExpr{
@@ -1772,7 +1773,7 @@ yydefault:
 		}
 	case 61:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line cc.y:849
+		//line cc.y:850
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[6].span)
 			yyVAL.expr = &VaArgExpr{
@@ -1784,14 +1785,14 @@ yydefault:
 		}
 	case 62:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:860
+		//line cc.y:861
 		{
 			yyVAL.span = Span{}
 			yyVAL.stmts = nil
 		}
 	case 63:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:865
+		//line cc.y:866
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmts = yyDollar[1].stmts
@@ -1801,20 +1802,20 @@ yydefault:
 		}
 	case 64:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:873
+		//line cc.y:874
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[2].stmt)
 		}
 	case 65:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:880
+		//line cc.y:881
 		{
 			yylex.(*lexer).pushScope()
 		}
 	case 66:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:884
+		//line cc.y:885
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yylex.(*lexer).popScope()
@@ -1822,14 +1823,14 @@ yydefault:
 		}
 	case 67:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:892
+		//line cc.y:893
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.label = &Label{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Name: yyDollar[2].expr, IsCase: true}
 		}
 	case 68:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:897
+		//line cc.y:898
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.label = &Label{
@@ -1844,7 +1845,7 @@ yydefault:
 		}
 	case 69:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:910
+		//line cc.y:911
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.label = &Label{
@@ -1859,7 +1860,7 @@ yydefault:
 		}
 	case 70:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:925
+		//line cc.y:926
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmt = yyDollar[2].stmt
@@ -1872,70 +1873,70 @@ yydefault:
 		}
 	case 71:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:938
+		//line cc.y:939
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = &EmptyStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()}
 		}
 	case 72:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:943
+		//line cc.y:944
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = &EmptyStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()}
 		}
 	case 73:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:948
+		//line cc.y:949
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = &EmptyStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()}
 		}
 	case 74:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:953
+		//line cc.y:954
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = yyDollar[1].stmt
 		}
 	case 75:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:958
+		//line cc.y:959
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmt = &ExprStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Expr: yyDollar[1].expr}
 		}
 	case 76:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:963
+		//line cc.y:964
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmt = &BlockStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Stmts: yyDollar[2].stmts}
 		}
 	case 77:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:968
+		//line cc.y:969
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmt = &BreakStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()}
 		}
 	case 78:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:973
+		//line cc.y:974
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmt = &ContinueStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()}
 		}
 	case 79:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line cc.y:978
+		//line cc.y:979
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[7].span)
 			yyVAL.stmt = &DoStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Body: yyDollar[2].stmt, Cond: yyDollar[5].expr}
 		}
 	case 80:
 		yyDollar = yyS[yypt-9 : yypt+1]
-		//line cc.y:983
+		//line cc.y:984
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[9].span)
 			yyVAL.stmt = &ForStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
@@ -1948,56 +1949,56 @@ yydefault:
 		}
 	case 81:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:994
+		//line cc.y:995
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmt = &GotoStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Target: yyDollar[2].symlit}
 		}
 	case 82:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:999
+		//line cc.y:1000
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 			yyVAL.stmt = &IfStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Cond: yyDollar[3].expr, Then: yyDollar[5].stmt}
 		}
 	case 83:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line cc.y:1004
+		//line cc.y:1005
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[7].span)
 			yyVAL.stmt = &IfStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Cond: yyDollar[3].expr, Then: yyDollar[5].stmt, Else: yyDollar[7].stmt}
 		}
 	case 84:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1009
+		//line cc.y:1010
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmt = &ReturnStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Value: yyDollar[2].expr}
 		}
 	case 85:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1014
+		//line cc.y:1015
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 			yyVAL.stmt = &SwitchStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Cond: yyDollar[3].expr, Body: yyDollar[5].stmt}
 		}
 	case 86:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1019
+		//line cc.y:1020
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 			yyVAL.stmt = &WhileStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Cond: yyDollar[3].expr, Body: yyDollar[5].stmt}
 		}
 	case 87:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1026
+		//line cc.y:1027
 		{
 			yyVAL.span = Span{}
 			yyVAL.abdecor = func(t *Type) *Type { return t }
 		}
 	case 88:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1031
+		//line cc.y:1032
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			_, q, _ := splitTypeWords(yyDollar[2].syntaxs)
@@ -2008,14 +2009,14 @@ yydefault:
 		}
 	case 89:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1040
+		//line cc.y:1041
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.abdecor = yyDollar[1].abdecor
 		}
 	case 90:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:1047
+		//line cc.y:1048
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			abdecor := yyDollar[1].abdecor
@@ -2041,12 +2042,12 @@ yydefault:
 				}
 			}
 			yyVAL.abdecor = func(t *Type) *Type {
-				abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
+				return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
 			}
 		}
 	case 91:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:1076
+		//line cc.y:1077
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			abdecor := yyDollar[1].abdecor
@@ -2059,14 +2060,14 @@ yydefault:
 		}
 	case 92:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1087
+		//line cc.y:1088
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.abdecor = yyDollar[2].abdecor
 		}
 	case 93:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1095
+		//line cc.y:1096
 		{
 			yyVAL.span = yyDollar[1].span
 			name := yyDollar[1].symlit
@@ -2074,7 +2075,7 @@ yydefault:
 		}
 	case 94:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1101
+		//line cc.y:1102
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			_, q, _ := splitTypeWords(yyDollar[2].syntaxs)
@@ -2086,26 +2087,26 @@ yydefault:
 		}
 	case 95:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1111
+		//line cc.y:1112
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.decor = yyDollar[2].decor
 		}
 	case 96:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:1116
+		//line cc.y:1117
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			decor := yyDollar[1].decor
 			decls := yyDollar[3].stmts
 			span := yyVAL.span
 			yyVAL.decor = func(t *Type) (*Type, *SymbolLiteral) {
-				return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Decls: decls, Id: nextId()})
+				return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
 			}
 		}
 	case 97:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:1126
+		//line cc.y:1127
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			decor := yyDollar[1].decor
@@ -2117,7 +2118,7 @@ yydefault:
 		}
 	case 98:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1139
+		//line cc.y:1140
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = &DeclStmt{
@@ -2132,14 +2133,14 @@ yydefault:
 		}
 	case 99:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1152
+		//line cc.y:1153
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmt = &DeclStmt{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Type: yyDollar[2].abdecor(yyDollar[1].typ), Id: nextId()}
 		}
 	case 100:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1157
+		//line cc.y:1158
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			typ, name := yyDollar[2].decor(yyDollar[1].typ)
@@ -2147,7 +2148,7 @@ yydefault:
 		}
 	case 101:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1163
+		//line cc.y:1164
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmt = &DeclStmt{
@@ -2162,21 +2163,21 @@ yydefault:
 		}
 	case 102:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1179
+		//line cc.y:1180
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.idec = idecor{yyDollar[1].decor, nil}
 		}
 	case 103:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1184
+		//line cc.y:1185
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.idec = idecor{yyDollar[1].decor, yyDollar[3].init}
 		}
 	case 104:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1192
+		//line cc.y:1193
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2187,7 +2188,7 @@ yydefault:
 		}
 	case 105:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1201
+		//line cc.y:1202
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2198,7 +2199,7 @@ yydefault:
 		}
 	case 106:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1210
+		//line cc.y:1211
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2209,7 +2210,7 @@ yydefault:
 		}
 	case 107:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1219
+		//line cc.y:1220
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2220,7 +2221,7 @@ yydefault:
 		}
 	case 108:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1228
+		//line cc.y:1229
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2231,7 +2232,7 @@ yydefault:
 		}
 	case 109:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1237
+		//line cc.y:1238
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2242,7 +2243,7 @@ yydefault:
 		}
 	case 110:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1249
+		//line cc.y:1250
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2253,7 +2254,7 @@ yydefault:
 		}
 	case 111:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1258
+		//line cc.y:1259
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2264,7 +2265,7 @@ yydefault:
 		}
 	case 112:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1267
+		//line cc.y:1268
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &SymbolLiteral{
@@ -2275,7 +2276,7 @@ yydefault:
 		}
 	case 113:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1276
+		//line cc.y:1277
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &SymbolLiteral{
@@ -2286,7 +2287,7 @@ yydefault:
 		}
 	case 114:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1285
+		//line cc.y:1286
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &SymbolLiteral{
@@ -2297,7 +2298,7 @@ yydefault:
 		}
 	case 115:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1294
+		//line cc.y:1295
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &SymbolLiteral{
@@ -2308,7 +2309,7 @@ yydefault:
 		}
 	case 116:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1303
+		//line cc.y:1304
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2319,7 +2320,7 @@ yydefault:
 		}
 	case 117:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1315
+		//line cc.y:1316
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2330,7 +2331,7 @@ yydefault:
 		}
 	case 118:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1324
+		//line cc.y:1325
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2341,7 +2342,7 @@ yydefault:
 		}
 	case 119:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1333
+		//line cc.y:1334
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2352,7 +2353,7 @@ yydefault:
 		}
 	case 120:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1342
+		//line cc.y:1343
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2363,7 +2364,7 @@ yydefault:
 		}
 	case 121:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1351
+		//line cc.y:1352
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2374,7 +2375,7 @@ yydefault:
 		}
 	case 122:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1360
+		//line cc.y:1361
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2385,7 +2386,7 @@ yydefault:
 		}
 	case 123:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1369
+		//line cc.y:1370
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2396,7 +2397,7 @@ yydefault:
 		}
 	case 124:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1378
+		//line cc.y:1379
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2407,7 +2408,7 @@ yydefault:
 		}
 	case 125:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1387
+		//line cc.y:1388
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = &LanguageKeyword{
@@ -2418,35 +2419,35 @@ yydefault:
 		}
 	case 126:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1398
+		//line cc.y:1399
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = yyDollar[1].syntax
 		}
 	case 127:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1403
+		//line cc.y:1404
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = yyDollar[1].syntax
 		}
 	case 128:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1410
+		//line cc.y:1411
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = yyDollar[1].syntax
 		}
 	case 129:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1415
+		//line cc.y:1416
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = yyDollar[1].syntax
 		}
 	case 130:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1423
+		//line cc.y:1424
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.typ = yyDollar[1].typ
@@ -2464,7 +2465,7 @@ yydefault:
 		}
 	case 131:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1447
+		//line cc.y:1448
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.tc.c, yyVAL.tc.q, yyVAL.tc.t = splitTypeWords(
@@ -2476,7 +2477,7 @@ yydefault:
 		}
 	case 132:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1457
+		//line cc.y:1458
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.tc.c, yyVAL.tc.q, _ = splitTypeWords(append(yyDollar[1].syntaxs, yyDollar[3].syntaxs...))
@@ -2484,7 +2485,7 @@ yydefault:
 		}
 	case 133:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1463
+		//line cc.y:1464
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyDollar[1].syntaxs = append(yyDollar[1].syntaxs, yyDollar[2].syntax)
@@ -2493,7 +2494,7 @@ yydefault:
 		}
 	case 134:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1470
+		//line cc.y:1471
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.tc.c, yyVAL.tc.q, _ = splitTypeWords(yyDollar[2].syntaxs)
@@ -2501,7 +2502,7 @@ yydefault:
 		}
 	case 135:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1476
+		//line cc.y:1477
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			var ts []Syntax
@@ -2512,7 +2513,7 @@ yydefault:
 		}
 	case 136:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1488
+		//line cc.y:1489
 		{
 			yyVAL.span = yyDollar[1].span
 			if yyDollar[1].tc.c != 0 {
@@ -2525,14 +2526,14 @@ yydefault:
 		}
 	case 137:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1501
+		//line cc.y:1502
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.typ = yyDollar[2].abdecor(yyDollar[1].typ)
 		}
 	case 138:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1509
+		//line cc.y:1510
 		{
 			lx := yylex.(*lexer)
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
@@ -2565,7 +2566,7 @@ yydefault:
 		}
 	case 139:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1542
+		//line cc.y:1543
 		{
 			lx := yylex.(*lexer)
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
@@ -2585,9 +2586,12 @@ yydefault:
 					}
 					lx.pushDecl(d)
 				} else {
-					d.Span = yyVAL.span
+					//d.Span = $<span>$
 					if idec.i != nil {
-						d.Init = idec.i
+						switch d := d.(type) {
+						case *DeclStmt:
+							d.Init = idec.i
+						}
 					}
 				}
 				yyVAL.stmts = append(yyVAL.stmts, d)
@@ -2606,27 +2610,27 @@ yydefault:
 		}
 	case 140:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1583
+		//line cc.y:1587
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmts = yyDollar[1].stmts
 		}
 	case 141:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1588
+		//line cc.y:1592
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.stmts = []*DeclStmt{yyDollar[1].fundecl}
+			yyVAL.stmts = []Stmt{yyDollar[1].stmt}
 		}
 	case 142:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1593
+		//line cc.y:1597
 		{
 			yyVAL.stmts = yyDollar[4].stmts
 		}
 	case 143:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1599
+		//line cc.y:1603
 		{
 			lx := yylex.(*lexer)
 			typ, name := yyDollar[2].decor(yyDollar[1].tc.t)
@@ -2636,33 +2640,61 @@ yydefault:
 			}
 			d := lx.lookupDecl(name)
 			if d == nil {
-				d = &DeclStmt{Name: name, Type: typ, Storage: yyDollar[1].tc.c, Id: nextId()}
+				d = &DeclStmt{
+					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					Name:       name,
+					Type:       typ,
+					Storage:    yyDollar[1].tc.c,
+					Id:         nextId(),
+				}
 				lx.pushDecl(d)
 			} else {
-				d.Type = typ
+				switch d := d.(type) {
+				case *DeclStmt:
+					d.Type = typ
+				}
 			}
 			yyVAL.decl = d
 			lx.pushScope()
-			for _, decl := range typ.Decls {
+			for _, decl := range typ.Stmts {
 				lx.pushDecl(decl)
 			}
 		}
 	case 144:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1620
+		//line cc.y:1633
 		{
 			yylex.(*lexer).popScope()
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
-			yyVAL.fundecl = yyDollar[4].decl
-			yyVAL.fundecl.Span = yyVAL.span
+			yyVAL.stmt = yyDollar[4].decl
 			if yyDollar[3].stmts != nil {
 				yylex.(*lexer).Errorf("cannot use pre-prototype definitions")
 			}
-			yyVAL.fundecl.Body = yyDollar[5].stmt
+			switch decl := yyVAL.stmt.(type) {
+			case *DeclStmt:
+				yyVAL.stmt = &FuncStmt{
+					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					Name:       decl.Name,
+					ReturnType: decl.Type,
+					IsDecl:     false,
+					Storage:    decl.Storage,
+					Body:       yyDollar[5].stmt,
+				}
+			case *FuncStmt:
+				yyVAL.stmt = &FuncStmt{
+					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					Name:       decl.Name,
+					ReturnType: decl.ReturnType,
+					Args:       decl.Args,
+					IsDecl:     false,
+					Storage:    decl.Storage,
+					Body:       yyDollar[5].stmt,
+				}
+			}
 		}
 	case 145:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1633
+		//line cc.y:1665
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.symlit = &SymbolLiteral{
@@ -2673,7 +2705,7 @@ yydefault:
 		}
 	case 146:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1642
+		//line cc.y:1674
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.symlit = &SymbolLiteral{
@@ -2684,46 +2716,55 @@ yydefault:
 		}
 	case 147:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1654
+		//line cc.y:1686
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.tk = Struct
 		}
 	case 148:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1659
+		//line cc.y:1691
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.tk = Union
 		}
 	case 149:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1666
+		//line cc.y:1698
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.decor = yyDollar[1].decor
 		}
 	case 150:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1671
+		//line cc.y:1703
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			name := yyDollar[1].syntax
 			expr := yyDollar[3].expr
 			yyVAL.decor = func(t *Type) (*Type, *SymbolLiteral) {
-				t.Width = expr
-				return t, name
+				t.Size = expr
+				switch name := name.(type) {
+				case *SymbolLiteral:
+					return t, name
+				default:
+					return t, &SymbolLiteral{
+						SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+						Value:      name.String(),
+						Id:         nextId(),
+					}
+				}
 			}
 		}
 	case 151:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1683
+		//line cc.y:1724
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmts = nil
 			for _, decor := range yyDollar[2].decors {
 				typ, name := decor(yyDollar[1].typ)
-				yyVAL.stmts = append(yyVAL.stmts, &Decl{
+				yyVAL.stmts = append(yyVAL.stmts, &DeclStmt{
 					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
 					Name:       name,
 					Type:       typ,
@@ -2731,7 +2772,7 @@ yydefault:
 				})
 			}
 			if yyDollar[2].decors == nil {
-				yyVAL.stmts = append(yyVAL.stmts, &Decl{
+				yyVAL.stmts = append(yyVAL.stmts, &DeclStmt{
 					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
 					Type:       yyDollar[1].typ,
 					Id:         nextId(),
@@ -2740,74 +2781,92 @@ yydefault:
 		}
 	case 152:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1706
+		//line cc.y:1747
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.typ = yylex.(*lexer).pushType(&Type{
 				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
-				Kind:       yyDollar[1].tk,
+				Type:       yyDollar[1].tk,
 				Tag:        yyDollar[2].symlit,
 				Id:         nextId(),
 			})
 		}
 	case 153:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1716
+		//line cc.y:1757
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 			yyVAL.typ = yylex.(*lexer).pushType(&Type{
 				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
-				Kind:       yyDollar[1].tk,
+				Type:       yyDollar[1].tk,
 				Tag:        yyDollar[2].syntax,
-				Decls:      yyDollar[4].stmts,
+				Stmts:      yyDollar[4].stmts,
 				Id:         nextId(),
 			})
 		}
 	case 154:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1729
+		//line cc.y:1770
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
-			yyVAL.prefix = &Prefix{Span: yyVAL.span, Dot: yyDollar[2].symlit}
+			yyVAL.prefix = &DotExpr{
+				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+				Id:         nextId(),
+				Struct: &EmptyLiteral{
+					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					Id:         nextId(),
+				},
+				Member: yyDollar[2].symlit,
+			}
 		}
 	case 155:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1736
+		//line cc.y:1785
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
-			yyVAL.expr = &Expr{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Op: Arrow, Left: yyDollar[1].expr, Text: yyDollar[3].symlit}
+			yyVAL.expr = &ArrowExpr{
+				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+				Id:         nextId(),
+				Ptr:        yyDollar[1].expr,
+				Member:     yyDollar[3].symlit,
+			}
 		}
 	case 156:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1741
+		//line cc.y:1795
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
-			yyVAL.expr = &Expr{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId(), Op: Dot, Left: yyDollar[1].expr, Text: yyDollar[3].symlit}
+			yyVAL.expr = &DotExpr{
+				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+				Id:         nextId(),
+				Struct:     yyDollar[1].expr,
+				Member:     yyDollar[3].symlit,
+			}
 		}
 	case 157:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1749
+		//line cc.y:1808
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
-			yyVAL.typ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Kind: Enum, Tag: yyDollar[2].symlit, Id: nextId()})
+			yyVAL.typ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Type: Enum, Tag: yyDollar[2].symlit, Id: nextId()})
 		}
 	case 158:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line cc.y:1754
+		//line cc.y:1813
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[6].span)
-			yyVAL.typ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Kind: Enum, Tag: yyDollar[2].syntax, Decls: yyDollar[4].stmts, Id: nextId()})
+			yyVAL.typ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Type: Enum, Tag: yyDollar[2].syntax, Stmts: yyDollar[4].stmts, Id: nextId()})
 		}
 	case 159:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1761
+		//line cc.y:1820
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			var x *Init
 			if yyDollar[2].expr != nil {
-				x = &Init{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, *SymbolLiteral: yyDollar[2].expr, Id: nextId()}
+				x = &Init{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Expr: yyDollar[2].expr, Id: nextId()}
 			}
-			yyVAL.stmt = &DeclExpr{
+			yyVAL.stmt = &DeclStmt{
 				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
 				Name: &SymbolLiteral{
 					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
@@ -2821,361 +2880,376 @@ yydefault:
 		}
 	case 160:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1782
+		//line cc.y:1841
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.expr = yyDollar[2].expr
 		}
 	case 161:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1790
+		//line cc.y:1849
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.init = &Init{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, *SymbolLiteral: yyDollar[1].expr, Id: nextId()}
+			yyVAL.init = &Init{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Expr: yyDollar[1].expr, Id: nextId()}
 		}
 	case 162:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1795
+		//line cc.y:1854
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.init = &Init{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Braced: yyDollar[1].inits, Id: nextId()}
 		}
 	case 163:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1802
+		//line cc.y:1861
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
-			yyVAL.inits = []*Init{}
+			yyVAL.inits = []Expr{
+				&BracedExpr{SyntaxInfo: SyntaxInfo{Span: yyVAL.span}, Id: nextId()},
+			}
 		}
 	case 164:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line cc.y:1807
+		//line cc.y:1868
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[4].span)
 			yyVAL.inits = append(yyDollar[2].inits, yyDollar[3].init)
 		}
 	case 165:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line cc.y:1812
+		//line cc.y:1873
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[5].span)
 			yyVAL.inits = append(yyDollar[2].inits, yyDollar[3].init)
 		}
 	case 166:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1818
+		//line cc.y:1879
 		{
 			yyVAL.span = Span{}
 			yyVAL.inits = nil
 		}
 	case 167:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1823
+		//line cc.y:1884
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.inits = append(yyDollar[1].inits, yyDollar[2].init)
 		}
 	case 168:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1830
+		//line cc.y:1891
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.init = yyDollar[1].init
 		}
 	case 169:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1835
+		//line cc.y:1896
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
-			yyVAL.init = yyDollar[3].init
-			yyVAL.init.Prefix = yyDollar[1].prefixes
+			yyVAL.init = &TupleExpr{
+				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+				Brackets:   None,
+				Id:         nextId(),
+				Args:       append(yyDollar[1].prefixes, yyDollar[3].init),
+			}
 		}
 	case 170:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1843
+		//line cc.y:1908
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
-			yyVAL.prefix = &Prefix{Span: yyVAL.span, Index: yyDollar[2].expr}
+			yyVAL.prefix = &CallExpr{
+				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+				Callee: &LanguageKeyword{
+					SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					Id:         nextId(),
+					Value:      "array_index",
+				},
+				Args: []Expr{yyDollar[2].expr},
+				Id:   nextId(),
+			}
 		}
 	case 171:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1849
+		//line cc.y:1923
 		{
 			yyVAL.span = Span{}
 		}
 	case 172:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1853
+		//line cc.y:1927
 		{
 			yyVAL.span = yyDollar[1].span
 		}
 	case 173:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1858
+		//line cc.y:1932
 		{
 			yyVAL.span = Span{}
 		}
 	case 174:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1862
+		//line cc.y:1936
 		{
 			yyVAL.span = yyDollar[1].span
 		}
 	case 175:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1871
+		//line cc.y:1945
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.prefixes = []*Prefix{yyDollar[1].prefix}
+			yyVAL.prefixes = []Expr{yyDollar[1].prefix}
 		}
 	case 176:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1876
+		//line cc.y:1950
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.prefixes = append(yyDollar[1].prefixes, yyDollar[2].prefix)
 		}
 	case 177:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1882
+		//line cc.y:1956
 		{
 			yyVAL.span = Span{}
 			yyVAL.syntax = &EmptyLiteral{}
 		}
 	case 178:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1887
+		//line cc.y:1961
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntax = yyDollar[1].symlit
 		}
 	case 179:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1893
+		//line cc.y:1967
 		{
 			yyVAL.span = Span{}
 			yyVAL.expr = nil
 		}
 	case 180:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1898
+		//line cc.y:1972
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 181:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1904
+		//line cc.y:1978
 		{
 			yyVAL.span = Span{}
 			yyVAL.expr = nil
 		}
 	case 182:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1909
+		//line cc.y:1983
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 183:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1916
+		//line cc.y:1990
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.exprs = []*Expr{yyDollar[1].expr}
+			yyVAL.exprs = []Expr{yyDollar[1].expr}
 		}
 	case 184:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1921
+		//line cc.y:1995
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.exprs = append(yyDollar[1].exprs, yyDollar[3].expr)
 		}
 	case 185:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1927
+		//line cc.y:2001
 		{
 			yyVAL.span = Span{}
 			yyVAL.exprs = nil
 		}
 	case 186:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1932
+		//line cc.y:2006
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.exprs = yyDollar[1].exprs
 		}
 	case 187:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1938
+		//line cc.y:2012
 		{
 			yyVAL.span = Span{}
 			yyVAL.stmts = nil
 		}
 	case 188:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1943
+		//line cc.y:2017
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[2].stmts...)
 		}
 	case 189:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1949
+		//line cc.y:2023
 		{
 			yyVAL.span = Span{}
 			yyVAL.labels = nil
 		}
 	case 190:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:1954
+		//line cc.y:2028
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.labels = append(yyDollar[1].labels, yyDollar[2].label)
 		}
 	case 191:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1961
+		//line cc.y:2035
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.stmts = []*Decl{yyDollar[1].stmt}
+			yyVAL.stmts = []Stmt{yyDollar[1].stmt}
 		}
 	case 192:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1966
+		//line cc.y:2040
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[3].stmt)
 		}
 	case 193:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1972
+		//line cc.y:2046
 		{
 			yyVAL.span = Span{}
 			yyVAL.stmts = nil
 		}
 	case 194:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1977
+		//line cc.y:2051
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmts = yyDollar[1].stmts
 		}
 	case 195:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:1984
+		//line cc.y:2058
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.idecs = []idecor{yyDollar[1].idec}
 		}
 	case 196:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:1989
+		//line cc.y:2063
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.idecs = append(yyDollar[1].idecs, yyDollar[3].idec)
 		}
 	case 197:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:1995
+		//line cc.y:2069
 		{
 			yyVAL.span = Span{}
 			yyVAL.idecs = nil
 		}
 	case 198:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2000
+		//line cc.y:2074
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.idecs = yyDollar[1].idecs
 		}
 	case 199:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2007
+		//line cc.y:2081
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = []Syntax{yyDollar[1].syntax}
 		}
 	case 200:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:2012
+		//line cc.y:2086
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.syntaxs = append(yyDollar[1].syntaxs, yyDollar[2].syntax)
 		}
 	case 201:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:2018
+		//line cc.y:2092
 		{
 			yyVAL.span = Span{}
 			yyVAL.syntaxs = nil
 		}
 	case 202:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2023
+		//line cc.y:2097
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = yyDollar[1].syntaxs
 		}
 	case 203:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2030
+		//line cc.y:2104
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = []Syntax{yyDollar[1].syntax}
 		}
 	case 204:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:2035
+		//line cc.y:2109
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.syntaxs = append(yyDollar[1].syntaxs, yyDollar[2].syntax)
 		}
 	case 205:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:2041
+		//line cc.y:2115
 		{
 			yyVAL.span = Span{}
 			yyVAL.syntaxs = nil
 		}
 	case 206:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2046
+		//line cc.y:2120
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = yyDollar[1].syntaxs
 		}
 	case 207:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2053
+		//line cc.y:2127
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = []Syntax{yyDollar[1].syntax}
 		}
 	case 208:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:2058
+		//line cc.y:2132
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.syntaxs = append(yyDollar[1].syntaxs, yyDollar[2].syntax)
 		}
 	case 209:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:2064
+		//line cc.y:2138
 		{
 			yyVAL.span = Span{}
 			yyVAL.syntaxs = nil
 		}
 	case 210:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2069
+		//line cc.y:2143
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.syntaxs = yyDollar[1].syntaxs
 		}
 	case 211:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2076
+		//line cc.y:2150
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.decors = nil
@@ -3183,86 +3257,98 @@ yydefault:
 		}
 	case 212:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:2082
+		//line cc.y:2156
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.decors = append(yyDollar[1].decors, yyDollar[3].decor)
 		}
 	case 213:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:2088
+		//line cc.y:2162
 		{
 			yyVAL.span = Span{}
 			yyVAL.decors = nil
 		}
 	case 214:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2093
+		//line cc.y:2167
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.decors = yyDollar[1].decors
 		}
 	case 215:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2100
+		//line cc.y:2174
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.stmts = yyDollar[1].stmts
 		}
 	case 216:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:2105
+		//line cc.y:2179
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[2].stmts...)
 		}
 	case 217:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line cc.y:2111
+		//line cc.y:2185
 		{
 			yyVAL.span = Span{}
 			yyVAL.expr = nil
 		}
 	case 218:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2116
+		//line cc.y:2190
 		{
 			yyVAL.span = yyDollar[1].span
 			yyVAL.expr = yyDollar[1].expr
 		}
 	case 219:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2123
+		//line cc.y:2197
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.stmts = []*Decl{yyDollar[1].stmt}
+			yyVAL.stmts = []Stmt{yyDollar[1].stmt}
 		}
 	case 220:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line cc.y:2128
+		//line cc.y:2202
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[3].span)
 			yyVAL.stmts = append(yyDollar[1].stmts, yyDollar[3].stmt)
 		}
 	case 221:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line cc.y:2135
+		//line cc.y:2209
 		{
 			yyVAL.span = yyDollar[1].span
-			yyVAL.exprs = &StringLiteral{
-				Value:      yyDollar[1].stringlit.Value,
-				Id:         nextId(),
-				SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+			if yyDollar[1].strlit == nil {
+				yyVAL.exprs = []Expr{
+					&StringLiteral{
+						Value:      "",
+						Id:         nextId(),
+						SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					},
+				}
+			} else {
+				yyVAL.exprs = []Expr{
+					&StringLiteral{
+						Value:      yyDollar[1].strlit.Value,
+						Id:         nextId(),
+						SyntaxInfo: SyntaxInfo{Span: yyVAL.span},
+					},
+				}
 			}
 		}
 	case 222:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line cc.y:2144
+		//line cc.y:2230
 		{
 			yyVAL.span = span(yyDollar[1].span, yyDollar[2].span)
 			yyVAL.exprs = append(yyDollar[1].exprs, &StringLiteral{
 				SyntaxInfo: SyntaxInfo{Span: yyDollar[2].span},
-				Value:      yyDollar[2].stringlit,
+				Value:      yyDollar[2].strlit.Value,
 				Id:         nextId(),
 			})
 		}

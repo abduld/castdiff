@@ -9,7 +9,6 @@ const (
 	Add             // Left + Right
 	And             // Left & Right
 	AndAnd          // Left && Right
-	Arrow           // Left->Right
 	Div             // Left / Right
 	EqEq            // Left == Right
 	Gt              // Left > Right
@@ -31,7 +30,6 @@ var binaryOpString = []string{
 	Add:    "Add",
 	And:    "And",
 	AndAnd: "AndAnd",
-	Arrow:  "Arrow",
 	Div:    "Div",
 	EqEq:   "EqEq",
 	Gt:     "Gt",
@@ -53,7 +51,6 @@ var binaryOpInfix = []string{
 	Add:    "+",
 	And:    "&",
 	AndAnd: "&&",
-	Arrow:  "->",
 	Div:    "/",
 	EqEq:   "==",
 	Gt:     ">",

@@ -60,6 +60,13 @@ func walk(x Syntax, before, after func(Syntax), seen map[Syntax]bool) {
 				walk(d, before, after, seen)
 			}
 	*/
+	case *FuncStmt:
+		walk(x.ReturnType, before, after, seen)
+		walk(x.Name, before, after, seen)
+		for _, arg := range x.Args {
+			walk(arg, before, after, seen)
+		}
+		walk(x.Body, before, after, seen)
 	case *DeclStmt:
 		walk(x.Type, before, after, seen)
 		walk(x.Name, before, after, seen)

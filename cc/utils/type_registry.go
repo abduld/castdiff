@@ -7,7 +7,11 @@
 
 package cc
 
+/*
 import (
 	. "github.com/abduld/castdiff/cc/ast"
 	. "github.com/abduld/castdiff/cc/parse"
 )
+*/
+
+

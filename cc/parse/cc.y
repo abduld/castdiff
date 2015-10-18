@@ -34,7 +34,8 @@
 package cc
 
 import (
-// "runtime/debug"
+	//"runtime/debug"
+	_ "fmt"
 
 	. "github.com/abduld/castdiff/cc/ast"
 )
@@ -62,8 +63,8 @@ func nextId() int {
 %union {
 	abdecor func(*Type) *Type
 	fundecl *FuncStmt
-	decl *DeclStmt
-	decls []*DeclStmt
+	decl Stmt
+	decls []DeclStmt
 	decor func(*Type) (*Type, *SymbolLiteral)
 	decors []func(*Type) (*Type, *SymbolLiteral)
 	expr Expr
@@ -75,8 +76,8 @@ func nextId() int {
 	label *Label
 	labels []*Label
 	span Span
-	prefix *Prefix
-	prefixes []*Prefix
+	prefix Expr
+	prefixes []Expr
 	stmt Stmt
 	stmts []Stmt
 	str string
@@ -125,7 +126,7 @@ func nextId() int {
 %token	<reallit>	tokFloat
 %token	<charlit>	tokLitChar
 %token	<intlit>	tokLong
-%token	<stringlit>	tokString
+%token	<strlit>	tokString
 %token	<str>	tokOffsetof
 %token	<str>	tokRegister
 %token	<str>	tokReturn
@@ -153,7 +154,7 @@ func nextId() int {
 %token	<str>	tokRestrict
 
 %type	<abdecor>	abdecor abdec1
-%type	<fundecl>	fndef
+%type	<stmt>	fndef
 %type	<stmt> edecl fnarg
 %type	<stmts>	decl decl_list_opt
 %type	<stmts>	fnarg_list fnarg_list_opt
@@ -1069,7 +1070,7 @@ abdec1:
 			}
 		}
 		$$ = func(t *Type) *Type {
-			abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
+			return abdecor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
 		}
 	}
 |	abdecor '[' expr_opt ']'
@@ -1119,7 +1120,7 @@ decor:
 		decls := $3
 		span := $<span>$
 		$$ = func(t *Type) (*Type, *SymbolLiteral) {
-			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Decls: decls, Id: nextId()})
+			return decor(&Type{SyntaxInfo: SyntaxInfo{Span: span}, Type: Func, Base: t, Stmts: decls, Id: nextId()})
 		}
 	}
 |	decor '[' expr_opt ']'
@@ -1558,9 +1559,12 @@ topdecl:
 				}
 				lx.pushDecl(d)
 			} else {
-				d.Span = $<span>$
+				//d.Span = $<span>$
 				if idec.i != nil {
-					d.Init = idec.i
+					switch d := d.(type) {
+					case *DeclStmt:
+						d.Init = idec.i
+					}
 				}
 			}
 			$$ = append($$, d);
@@ -1587,7 +1591,7 @@ xdecl:
 |	fndef
 	{
 		$<span>$ = $<span>1
-		$$ = []*DeclStmt{$1}
+		$$ = []Stmt{$1}
 	}
 |	tokExtern tokString '{' prog '}'
 	{
@@ -1605,14 +1609,23 @@ fndef:
 		}
 		d := lx.lookupDecl(name)
 		if d == nil {
-			d = &DeclStmt{Name: name, Type: typ, Storage: $1.c, Id: nextId()}
+			d = &DeclStmt{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Name: name,
+				Type: typ,
+				Storage: $1.c,
+				Id: nextId(),
+			}
 			lx.pushDecl(d);
 		} else {
-			d.Type = typ
+			switch d := d.(type) {
+				case *DeclStmt:
+					d.Type = typ
+			}
 		}
 		$<decl>$ = d
 		lx.pushScope()
-		for _, decl := range typ.Decls {
+		for _, decl := range typ.Stmts {
 			lx.pushDecl(decl);
 		}
 	}
@@ -1621,11 +1634,30 @@ fndef:
 		yylex.(*lexer).popScope();
 		$<span>$ = span($<span>1, $<span>5)
 		$$ = $<decl>4
-		$$.Span = $<span>$
 		if $3 != nil {
 			yylex.(*lexer).Errorf("cannot use pre-prototype definitions")
 		}
-		$$.Body = $5
+		switch decl := $$.(type) {
+			case *DeclStmt:
+				$$ = &FuncStmt{
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+					Name: decl.Name,
+					ReturnType: decl.Type,
+					IsDecl: false,
+					Storage: decl.Storage,
+					Body: $5,
+				}
+			case *FuncStmt:
+				$$ = &FuncStmt{
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+					Name: decl.Name,
+					ReturnType: decl.ReturnType,
+					Args: decl.Args,
+					IsDecl: false,
+					Storage: decl.Storage,
+					Body: $5,
+				}
+		}
 	}
 
 tag:
@@ -1673,8 +1705,17 @@ sudecor:
 		name := $1
 		expr := $3
 		$$ = func(t *Type) (*Type, *SymbolLiteral) {
-			t.Width = expr
-			return t, name
+			t.Size = expr
+			switch name := name.(type) {
+				case *SymbolLiteral:
+					return t, name
+				default:
+					return t, &SymbolLiteral{
+						SyntaxInfo: SyntaxInfo{Span: $<span>$},
+						Value: name.String(),
+						Id: nextId(),
+					}
+			}
 		}
 	}
 
@@ -1685,7 +1726,7 @@ sudecl:
 		$$ = nil
 		for _, decor := range $2 {
 			typ, name := decor($1)
-			$$ = append($$, &Decl{
+			$$ = append($$, &DeclStmt{
 				SyntaxInfo: SyntaxInfo{Span: $<span>$},
 				Name: name,
 				Type: typ,
@@ -1693,7 +1734,7 @@ sudecl:
 			})
 		}
 		if $2 == nil {
-			$$ = append($$, &Decl{
+			$$ = append($$, &DeclStmt{
 				SyntaxInfo: SyntaxInfo{Span: $<span>$},
 				Type: $1,
 				Id: nextId(),
@@ -1707,7 +1748,7 @@ typespec:
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = yylex.(*lexer).pushType(&Type{
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
-			Kind: $1,
+			Type: $1,
 			Tag: $2,
 			Id: nextId(),
 		})
@@ -1717,9 +1758,9 @@ typespec:
 		$<span>$ = span($<span>1, $<span>5)
 		$$ = yylex.(*lexer).pushType(&Type{
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
-			Kind: $1,
+			Type: $1,
 			Tag: $2,
-			Decls: $4,
+			Stmts: $4,
 			Id: nextId(),
 		})
 	}
@@ -1728,19 +1769,37 @@ initprefix:
 	'.' tag
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = &Prefix{Span: $<span>$, Dot: $2}
+		$$ = &DotExpr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Struct: &EmptyLiteral{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Id: nextId(),
+			},
+			Member: $2,
+		}
 	}
 
 expr:
 	expr tokArrow tag
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Arrow, Left: $1, Text: $3}
+		$$ = &ArrowExpr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Ptr: $1,
+			Member: $3,
+		}
 	}
 |	expr '.' tag
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Expr{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Id: nextId(), Op: Dot, Left: $1, Text: $3}
+		$$ = &DotExpr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Id: nextId(),
+			Struct: $1,
+			Member: $3,
+		}
 	}
 
 // enum
@@ -1748,12 +1807,12 @@ typespec:
 	tokEnum tag
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2, Id: nextId()})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: Enum, Tag: $2, Id: nextId()})
 	}
 |	tokEnum tag_opt '{' edecl_list comma_opt '}'
 	{
 		$<span>$ = span($<span>1, $<span>6)
-		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Kind: Enum, Tag: $2, Decls: $4, Id: nextId()})
+		$$ = yylex.(*lexer).pushType(&Type{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Type: Enum, Tag: $2, Stmts: $4, Id: nextId()})
 	}
 
 edecl:
@@ -1762,9 +1821,9 @@ edecl:
 		$<span>$ = span($<span>1, $<span>2)
 		var x *Init
 		if $2 != nil {
-			x = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, *SymbolLiteral: $2, Id: nextId()}
+			x = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $2, Id: nextId()}
 		}
-		$$ = &DeclExpr{
+		$$ = &DeclStmt{
 			SyntaxInfo: SyntaxInfo{Span: $<span>$},
 			Name: &SymbolLiteral{
 				SyntaxInfo: SyntaxInfo{Span: $<span>$},
@@ -1789,7 +1848,7 @@ init:
 	expr
 	{
 		$<span>$ = $<span>1
-		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, *SymbolLiteral: $1, Id: nextId()}
+		$$ = &Init{SyntaxInfo: SyntaxInfo{Span: $<span>$}, Expr: $1, Id: nextId()}
 	}
 |	braced_init_list
 	{
@@ -1801,7 +1860,9 @@ braced_init_list:
 	'{' '}'
 	{
 		$<span>$ = span($<span>1, $<span>2)
-		$$ = []*Init{}
+		$$ = []Expr{
+			&BracedExpr{SyntaxInfo: SyntaxInfo{Span: $<span>$},Id: nextId()},
+		}
 	}
 |	'{' binit_list binit '}'
 	{
@@ -1834,15 +1895,28 @@ binit:
 |	initprefix_list eq_opt init
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = $3
-		$$.Prefix = $1
+		$$ = &TupleExpr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Brackets: None,
+			Id: nextId(),
+			Args: append($1, $3),
+		}
 	}
 
 initprefix:
 	'[' expr ']'
 	{
 		$<span>$ = span($<span>1, $<span>3)
-		$$ = &Prefix{Span: $<span>$, Index: $2}
+		$$ = &CallExpr{
+			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+			Callee: &LanguageKeyword{
+				SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				Id: nextId(),
+				Value: "array_index",
+			},
+			Args: []Expr{$2},
+			Id: nextId(),
+		}
 	}
 
 eq_opt:
@@ -1870,7 +1944,7 @@ initprefix_list:
 	initprefix
 	{
 		$<span>$ = $<span>1
-		$$ = []*Prefix{$1}
+		$$ = []Expr{$1}
 	}
 |	initprefix_list initprefix
 	{
@@ -1915,7 +1989,7 @@ expr_list:
 	expr
 	{
 		$<span>$ = $<span>1
-		$$ = []*Expr{$1}
+		$$ = []Expr{$1}
 	}
 |	expr_list ',' expr
 	{
@@ -1960,7 +2034,7 @@ fnarg_list:
 	fnarg
 	{
 		$<span>$ = $<span>1
-		$$ = []*Decl{$1}
+		$$ = []Stmt{$1}
 	}
 |	fnarg_list ',' fnarg
 	{
@@ -2122,7 +2196,7 @@ edecl_list:
 	edecl
 	{
 		$<span>$ = $<span>1
-		$$ = []*Decl{$1}
+		$$ = []Stmt{$1}
 	}
 |	edecl_list ',' edecl
 	{
@@ -2134,10 +2208,22 @@ string_list:
 	tokString
 	{
 		$<span>$ = $<span>1
-		$$ = &StringLiteral{
-			Value: $1.Value,
-			Id: nextId(),
-			SyntaxInfo: SyntaxInfo{Span: $<span>$},
+		if $1 == nil {
+			$$ = []Expr{
+				&StringLiteral{
+					Value: "",
+					Id: nextId(),
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				},
+			}
+		} else {
+			$$ = []Expr{
+				&StringLiteral{
+					Value: $1.Value,
+					Id: nextId(),
+					SyntaxInfo: SyntaxInfo{Span: $<span>$},
+				},
+			}
 		}
 	}
 |	string_list tokString
@@ -2145,7 +2231,7 @@ string_list:
 		$<span>$ = span($<span>1, $<span>2)
 		$$ = append($1, &StringLiteral{
 				SyntaxInfo: SyntaxInfo{Span: $<span>2},
-				Value: $2,
+				Value: $2.Value,
 				Id: nextId(),
 		})
 	}
