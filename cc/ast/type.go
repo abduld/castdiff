@@ -6,20 +6,19 @@ package ast
 
 import (
 	"encoding/json"
-	"strconv"
 )
 
 type Type struct {
 	SyntaxInfo
-	Id    int         `json:"id"`
-	Kind string `json:"kind"`
-	Type  TypeType    `json:"type"`
-	Qual  TypeQual    `json:"qual"`
-	Base  *Type       `json:"base"`
-	Size Expr `json:"size"`
-	Tag   Syntax      `json:"tag"`
-	Stmts []Stmt `json:"stmts"`
-	Name  Syntax      `json:"name"`
+	Id    int      `json:"id"`
+	Kind  string   `json:"kind"`
+	Type  TypeType `json:"type"`
+	Qual  TypeQual `json:"qual"`
+	Base  *Type    `json:"base"`
+	Size  Expr     `json:"size"`
+	Tag   Syntax   `json:"tag"`
+	Stmts []Stmt   `json:"stmts"`
+	Name  Syntax   `json:"name"`
 }
 
 func (x *Type) GetId() int {
@@ -60,7 +59,7 @@ func (t *Type) String() string {
 	}
 	switch t.Type {
 	default:
-		return t.Type.String() + "<" + strconv.Itoa(t.Id) + ">"
+		return t.Type.String()
 	case TypedefType:
 		if t.Name.String() == "" {
 			return "missing_typedef_name"
@@ -74,7 +73,7 @@ func (t *Type) String() string {
 		}
 		return t.Type.String() + " " + t.Tag.String()
 	case Array:
-		if (t.Size != nil) {
+		if t.Size != nil {
 			return t.Base.String() + "[" + t.Size.String() + "]"
 		}
 		return t.Base.String() + "[]"
@@ -87,7 +86,7 @@ func (t *Type) String() string {
 
 			switch d := d.(type) {
 			default:
-				continue;
+				continue
 			case *DeclStmt:
 				s += d.Name.String() + " " + d.Type.String()
 			}

@@ -1,15 +1,17 @@
 package ast
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Init is an initializer expression.
 type Init struct {
 	SyntaxInfo
-	Kind string
+	Kind   string
 	Id     int
 	Prefix []*Prefix // list of prefixes
 	Expr   Expr      // Expr
-	Braced []Expr   // {Braced}
+	Braced []Expr    // {Braced}
 
 	XType *Type // derived type
 }
@@ -37,7 +39,7 @@ func (x *Init) String() string {
 	for _, elem := range x.Prefix {
 		ret += elem.String() + "\n"
 	}
-	return ret
+	return ret + x.Expr.String()
 }
 
 func (x *Init) MarshalJSON() ([]byte, error) {

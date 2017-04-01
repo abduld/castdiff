@@ -22,7 +22,7 @@ var (
 */
 
 func main() {
-	cc.Test(os.Args[0])
+	cc.Test(os.Args[1])
 	/*
 		log.SetFlags(0)
 		flag.Parse()

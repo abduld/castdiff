@@ -1,6 +1,9 @@
 package ast
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+)
 
 type FuncStmt struct {
 	SyntaxInfo
@@ -8,9 +11,9 @@ type FuncStmt struct {
 	Id         int            `json:"id"`
 	ReturnType *Type          `json:"rettype"`
 	Name       *SymbolLiteral `json:"name"`
-	Args       []*DeclStmt     `json:"args"`
+	Args       []Stmt         `json:"args"`
 	Body       Syntax         `json:"body"`
-	Storage Storage        `json:"storage"`
+	Storage    Storage        `json:"storage"`
 	IsDecl     bool           `json:"decl"`
 }
 
@@ -20,13 +23,14 @@ func (x *FuncStmt) GetId() int {
 
 func (x *FuncStmt) String() string {
 	ret := ""
-	ret += x.ReturnType.String() + " " + x.Name.String() + "( "
+	ret += x.ReturnType.String() + " " + x.Name.String() + "("
 	for _, elem := range x.Args {
 		ret += elem.String() + ", "
 	}
+	ret = strings.TrimRight(ret, ", ")
 	ret += ")"
-	if x.IsDecl {
-		ret += "{\n" + x.Body.String() + "}"
+	if !x.IsDecl {
+		ret += " {\n" + x.Body.String() + "\n}"
 	} else {
 		ret += ";"
 	}

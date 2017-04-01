@@ -19,9 +19,10 @@ func (x *BlockStmt) GetId() int {
 func (x *BlockStmt) String() string {
 	sstmts := make([]string, len(x.Stmts))
 	for ii, stmt := range x.Stmts {
-		sstmts[ii] = stmt.String()
+		s := strings.TrimRight(stmt.String(), ";")
+		sstmts[ii] = s + ";"
 	}
-	return strings.Join(sstmts, ";\n")
+	return strings.Join(sstmts, "\n")
 }
 
 func (x *BlockStmt) GetChildren() []Syntax {

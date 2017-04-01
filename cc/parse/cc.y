@@ -37,6 +37,7 @@ import (
 	//"runtime/debug"
 	_ "fmt"
 
+	"github.com/k0kubun/pp"
 	. "github.com/abduld/castdiff/cc/ast"
 )
 
@@ -1609,10 +1610,11 @@ fndef:
 		}
 		d := lx.lookupDecl(name)
 		if d == nil {
-			d = &DeclStmt{
+			d = &FuncStmt{
 				SyntaxInfo: SyntaxInfo{Span: $<span>$},
 				Name: name,
-				Type: typ,
+				Args: typ.Stmts,
+				ReturnType: typ.Base,
 				Storage: $1.c,
 				Id: nextId(),
 			}
@@ -1637,17 +1639,20 @@ fndef:
 		if $3 != nil {
 			yylex.(*lexer).Errorf("cannot use pre-prototype definitions")
 		}
+
 		switch decl := $$.(type) {
 			case *DeclStmt:
+				pp.Println($5)
 				$$ = &FuncStmt{
 					SyntaxInfo: SyntaxInfo{Span: $<span>$},
 					Name: decl.Name,
 					ReturnType: decl.Type,
-					IsDecl: false,
+					IsDecl: true,
 					Storage: decl.Storage,
 					Body: $5,
 				}
 			case *FuncStmt:
+				
 				$$ = &FuncStmt{
 					SyntaxInfo: SyntaxInfo{Span: $<span>$},
 					Name: decl.Name,

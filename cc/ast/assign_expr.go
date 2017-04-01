@@ -20,9 +20,9 @@ func (x *AssignExpr) GetChildren() []Syntax {
 }
 
 func (x *AssignExpr) String() string {
-	str := x.Right.String()
+	str := x.Left.String()
 	str += " " + x.Op.String() + " "
-	str += x.Left.String()
+	str += x.Right.String()
 	return str
 }
 

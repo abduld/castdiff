@@ -7,7 +7,7 @@ import (
 
 type DeclStmt struct {
 	SyntaxInfo
-	Kind string `json:"kind"`
+	Kind    string         `json:"kind"`
 	Id      int            `json:"id"`
 	Type    *Type          `json:"type"`
 	Storage Storage        `json:"storage"`
@@ -38,9 +38,9 @@ func (d *DeclStmt) String() string {
 		return "nil DeclStmt"
 	}
 	if d.Init != nil {
-		return fmt.Sprintf("DeclStmt<%d>{%s, %s} = %s", d.Id, d.Name.String(), d.Type, d.Init)
+		return fmt.Sprintf("%s %s = %s", d.Type.String(), d.Name.String(), d.Init.String())
 	} else {
-		return fmt.Sprintf("DeclStmt<%d>{%s, %s}", d.Id, d.Name.String(), d.Type)
+		return fmt.Sprintf("%s %s", d.Type.String(), d.Name.String())
 	}
 }
 func (d *DeclStmt) IsStmt() bool {

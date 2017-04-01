@@ -11,9 +11,7 @@ import (
 	"log"
 	"os"
 
-	//	. "github.com/abduld/castdiff/cc/ast"
 	parse "github.com/abduld/castdiff/cc/parse"
-	//	. "github.com/abduld/castdiff/cc/utils"
 )
 
 func Test(file string) {
@@ -28,6 +26,7 @@ func Test(file string) {
 		log.Fatal(err)
 	}
 	fmt.Println(prog.String())
+
 	/*
 		b, err := json.Marshal(prog)
 		if err == nil {
