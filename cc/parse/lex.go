@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:generate go tool yacc cc.y
+//go:generate goyacc cc.y
 
 package cc
 
 import (
 	"fmt"
-	. "github.com/abduld/castdiff/cc/ast"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+
+	. "github.com/abduld/castdiff/cc/ast"
 )
 
 type Scope struct {
@@ -52,7 +53,7 @@ type Header struct {
 	types []*Type
 }
 
-func pushDeclStmt(lx *lexer, decl * DeclStmt) {
+func pushDeclStmt(lx *lexer, decl *DeclStmt) {
 	sc := lx.scope
 
 	if sc == nil {
@@ -70,7 +71,7 @@ func pushDeclStmt(lx *lexer, decl * DeclStmt) {
 	}
 }
 
-func pushFuncStmt(lx *lexer, decl * FuncStmt) {
+func pushFuncStmt(lx *lexer, decl *FuncStmt) {
 	sc := lx.scope
 
 	if sc == nil {
@@ -123,7 +124,7 @@ func (lx *lexer) pushType(typ *Type) *Type {
 
 			switch decl := decl.(type) {
 			default:
-				break;
+				break
 			case *DeclStmt:
 				lx.pushDecl(decl)
 			case *FuncStmt:
@@ -279,7 +280,7 @@ var stdMap = map[string]string{
 	"u.h":      hdr_u_h,
 	"libc.h":   hdr_libc_h,
 	"wb.h":     hdr_wb_h,
-	"math.h": 	hdr_math_h,
+	"math.h":   hdr_math_h,
 	"stdarg.h": "",
 	"signal.h": "",
 }
@@ -603,9 +604,9 @@ Restart:
 		if yy.decl != nil {
 			switch decl := yy.decl.(type) {
 			default:
-				break;
+				break
 			case *DeclStmt:
-				if decl.Storage & Typedef != 0 {
+				if decl.Storage&Typedef != 0 {
 					t := decl.Type
 					for t.Type == TypedefType && t.Base != nil {
 						t = t.Base
@@ -614,7 +615,7 @@ Restart:
 					return tokTypeName
 				}
 			case *FuncStmt:
-				if decl.Storage & Typedef != 0 {
+				if decl.Storage&Typedef != 0 {
 					t := decl.ReturnType
 					for t.Type == TypedefType && t.Base != nil {
 						t = t.Base
@@ -785,8 +786,8 @@ func (lx *lexer) enum(x Syntax) {
 		}
 		lx.enum(x.Callee)
 		for _, arg := range x.Args {
-		lx.enum(arg)
-	}
+			lx.enum(arg)
+		}
 	case *TupleExpr:
 		if x == nil {
 			return

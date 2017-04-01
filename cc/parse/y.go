@@ -265,7 +265,7 @@ var yyStatenames = [...]string{}
 
 const yyEofCode = 1
 const yyErrCode = 2
-const yyMaxDepth = 200
+const yyInitialStackSize = 16
 
 //line yacctab:1
 var yyExca = [...]int{
@@ -290,11 +290,7 @@ var yyExca = [...]int{
 	-2, 93,
 }
 
-const yyNprod = 223
 const yyPrivate = 57344
-
-var yyTokenNames []string
-var yyStates []string
 
 const yyLast = 1655
 
@@ -716,18 +712,17 @@ type yyParser interface {
 }
 
 type yyParserImpl struct {
-	lookahead func() int
+	lval  yySymType
+	stack [yyInitialStackSize]yySymType
+	char  int
 }
 
 func (p *yyParserImpl) Lookahead() int {
-	return p.lookahead()
+	return p.char
 }
 
 func yyNewParser() yyParser {
-	p := &yyParserImpl{
-		lookahead: func() int { return -1 },
-	}
-	return p
+	return &yyParserImpl{}
 }
 
 const yyFlag = -1000
@@ -855,22 +850,20 @@ func yyParse(yylex yyLexer) int {
 
 func (yyrcvr *yyParserImpl) Parse(yylex yyLexer) int {
 	var yyn int
-	var yylval yySymType
 	var yyVAL yySymType
 	var yyDollar []yySymType
 	_ = yyDollar // silence set and not used
-	yyS := make([]yySymType, yyMaxDepth)
+	yyS := yyrcvr.stack[:]
 
 	Nerrs := 0   /* number of errors */
 	Errflag := 0 /* error recovery flag */
 	yystate := 0
-	yychar := -1
-	yytoken := -1 // yychar translated into internal numbering
-	yyrcvr.lookahead = func() int { return yychar }
+	yyrcvr.char = -1
+	yytoken := -1 // yyrcvr.char translated into internal numbering
 	defer func() {
 		// Make sure we report no lookahead when not parsing.
 		yystate = -1
-		yychar = -1
+		yyrcvr.char = -1
 		yytoken = -1
 	}()
 	yyp := -1
@@ -902,8 +895,8 @@ yynewstate:
 	if yyn <= yyFlag {
 		goto yydefault /* simple state */
 	}
-	if yychar < 0 {
-		yychar, yytoken = yylex1(yylex, &yylval)
+	if yyrcvr.char < 0 {
+		yyrcvr.char, yytoken = yylex1(yylex, &yyrcvr.lval)
 	}
 	yyn += yytoken
 	if yyn < 0 || yyn >= yyLast {
@@ -911,9 +904,9 @@ yynewstate:
 	}
 	yyn = yyAct[yyn]
 	if yyChk[yyn] == yytoken { /* valid shift */
-		yychar = -1
+		yyrcvr.char = -1
 		yytoken = -1
-		yyVAL = yylval
+		yyVAL = yyrcvr.lval
 		yystate = yyn
 		if Errflag > 0 {
 			Errflag--
@@ -925,8 +918,8 @@ yydefault:
 	/* default state action */
 	yyn = yyDef[yystate]
 	if yyn == -2 {
-		if yychar < 0 {
-			yychar, yytoken = yylex1(yylex, &yylval)
+		if yyrcvr.char < 0 {
+			yyrcvr.char, yytoken = yylex1(yylex, &yyrcvr.lval)
 		}
 
 		/* look through exception table */
@@ -989,7 +982,7 @@ yydefault:
 			if yytoken == yyEofCode {
 				goto ret1
 			}
-			yychar = -1
+			yyrcvr.char = -1
 			yytoken = -1
 			goto yynewstate /* try again in the same state */
 		}

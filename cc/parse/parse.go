@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:generate go tool yacc cc.y
-
 package cc
 
 import (
@@ -21,7 +19,7 @@ func Read(name string, r io.Reader) (*Prog, error) {
 
 func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 	lx := &lexer{}
-	yyDebug        = 1
+	yyDebug = 1
 	yyErrorVerbose = true
 	var prog *Prog
 	for i, name := range names {
@@ -55,7 +53,7 @@ func ReadMany(names []string, readers []io.Reader) (*Prog, error) {
 			for name, decl := range sc.Decl {
 				switch decl := decl.(type) {
 				default:
-					break ;
+					break
 				case *DeclStmt:
 					if decl.Storage&Static != 0 || (decl.Storage&Typedef != 0 && strings.HasSuffix(decl.Span.Start.File, ".c")) {
 						delete(sc.Decl, name)
@@ -139,4 +137,3 @@ func removeDuplicates(prog *Prog) {
 	}
 	prog.Decls = out
 }
-
